@@ -47,7 +47,7 @@ public class AlpacaSheepGuards
         
         // Initialize farm using the setup helper
         FarmSetupHelper farmSetupHelper = new FarmSetupHelper();
-        farm = farmSetupHelper.initializeFarm(states);
+        this.farm = farmSetupHelper.initializeFarm(states);
     
     }
 
@@ -75,17 +75,7 @@ public class AlpacaSheepGuards
             });
             System.out.println();
     }
-    // public void printAllSimulationResults() {
-    //     allSimulationResults.forEach((protectionLevel, results) -> {
-    //         System.out.println("Protection Level: " + protectionLevel);
-    //         results.forEach(protectionLevelResult -> {
-    //             System.out.println("  " + protectionLevelResult.toString());
-    //             System.out.println("  Alpaca Maintenance Costs:");
-    //             protectionLevelResult.farm.getAlpacas().forEach(alpaca -> System.out.println("    Alpaca " + alpaca.getName() + ": $" + alpaca.getMaintenanceCost()));
-    //         });
-    //         System.out.println();
-    //     });
-    // }
+
 
     public void run()
     {
@@ -93,7 +83,7 @@ public class AlpacaSheepGuards
         initialize();
         runAllSimulations();
         calculateProtectionLevelResults(this.farm.getState().getPredators());
-        displayLevels(this.farm.getState().getPredators());
+        displayLevels();
         String recommendedLevel = findRecommendedLevel();
         displayFinalRecommendation(recommendedLevel);
         generateFileReport(recommendedLevel);
@@ -220,9 +210,8 @@ public class AlpacaSheepGuards
      * Displays all statistics for a protection level using the ProtectionLevelResult object.
      *
      * @param protectionLevelResult The ProtectionLevelResult containing all statistics.
-     * @param predators             The array of Predator objects for display order and names.
      */
-    public void displayLevels(Predator[] predators)
+    public void displayLevels()
     {
         for (String level : PROTECTION_LEVELS) 
         {
@@ -239,20 +228,21 @@ public class AlpacaSheepGuards
 
             System.out.println("\nAverage Predator Kills:");
             HashMap<String, Double> avgKills = protectionLevelResult.getAveragePredatorKills();
-            for (Predator predator : predators)
+            for (HashMap.Entry<String, Double> entry : avgKills.entrySet())
             {
-                String name = predator.getName();
-                String displayName = name;
+                String name = entry.getKey();
+                // String displayName = name;
                 if (name.equals("Feral Pig"))
                 {
-                    displayName = "Pig";
+                    name = "Pig";
                 }
                 else if (name.equals("Wedge-tailed Eagle"))
                 {
-                    displayName = "Eagle";
+                    name = "Eagle";
                 }
-                System.out.printf("  %-12s: %.2f%n", displayName, avgKills.getOrDefault(name, 0.0));
+                System.out.printf("  %-12s: %.2f%n", name, entry.getValue());
             }
+
 
             // System.out.println("\nMost Troublesome Predators:");
             // ArrayList<String> mostTroublesome = protectionLevelResult.getMostTroublesomePredators();

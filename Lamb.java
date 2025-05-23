@@ -1,38 +1,30 @@
 public class Lamb extends Animal 
 {
-    private String name;
-
     public Lamb() 
     {
-        super();
-        this.name = "lamb";
+        super(true, "Lamb");
     }
 
     public Lamb(String name) 
     {
-        super();
-        this.name = name;
+        super(true, name);
     }
     
     @Override
-    public void display() 
+    public double getDeathProbability(Predator predator, int numberOfAlpacas) 
     {
-        System.out.println(this.toString());
-    }
-
-    public String getName()
-    {
-        return this.name;
-    }
-    
-    public void setName(String name)
-    {
-        this.name = name;
+        double deathProbability = predator.getDangerFactor() * 2.0;
+        if (numberOfAlpacas == 1) 
+            deathProbability /= 2.0;
+        else if (numberOfAlpacas >= 2) 
+            deathProbability /= 4.0;
+        return deathProbability;
     }
 
     @Override
     public String toString() 
     {
-        return this.getName() + " [alive=" + getAlive() + "]";
+        return this.getName() + " [alive=" + this.getAlive() + "]";
     }
+
 }

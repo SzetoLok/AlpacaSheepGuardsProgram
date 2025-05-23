@@ -1,38 +1,30 @@
 public class Sheep extends Animal 
 {
-    private String name;
-
     public Sheep() 
     {
-        super();
-        this.name = "sheep";
+        super(true, "Sheep");
     }
 
     public Sheep(String name) 
     {
-        super();
-        this.name = name;
+        super(true, name);
     }
     
     @Override
-    public void display() 
+    public double getDeathProbability(Predator predator, int numberOfAlpacas) 
     {
-        System.out.println(this.toString());
+        double deathProbability = predator.getDangerFactor();
+        if (numberOfAlpacas == 1) 
+            deathProbability /= 2.0;
+        else if (numberOfAlpacas >= 2) 
+            deathProbability /= 4.0;
+        return deathProbability;
     }
 
-    public String getName()
-    {
-        return this.name;
-    }
-    
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-    
     @Override
     public String toString() 
     {
-        return this.getName() + " [alive=" + getAlive() + "]";
+        return this.getName() + " [alive=" + this.getAlive() + "]";
     }
+
 }

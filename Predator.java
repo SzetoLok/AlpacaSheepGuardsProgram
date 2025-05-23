@@ -6,7 +6,7 @@ public class Predator
     public Predator()
     {
         this.name = "Unknown";
-        this.dangerFactor =0.0;
+        this.dangerFactor = 0.0;
     }
 
     public Predator(String name, double dangerFactor) 

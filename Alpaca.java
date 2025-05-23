@@ -15,18 +15,14 @@ public class Alpaca extends Animal
     /** The yearly hire cost for an alpaca (fixed for all alpacas). */
     public static final int HIRE_COST = 500;
 
-    /** The name of the alpaca. */
-    private String name;
-
     /**
      * Default constructor which creates an alpaca with a random maintenance cost
      * between $400 and $599 (inclusive) and no name.
      */
     public Alpaca()
     {
-        super();
+        super(true, "Alpaca");
         this.maintenanceCost = 400 + (int)(Math.random() * 200);
-        this.name = "alpaca";
     }
 
     /**
@@ -37,9 +33,8 @@ public class Alpaca extends Animal
      */
     public Alpaca(int maintenanceCost, String name)
     {
-        super();
+        super(true, name);
         this.maintenanceCost = maintenanceCost;
-        this.name = name;
     }
 
     /**
@@ -60,6 +55,15 @@ public class Alpaca extends Animal
         System.out.println(this.toString());
     }
 
+    public double getDeathProbability(Predator predator, int numberOfAlpacas)
+    {
+        double deathProbability = predator.getDangerFactor();
+        if (numberOfAlpacas == 1) 
+            deathProbability /= 2.0;
+        else if (numberOfAlpacas >= 2) 
+            deathProbability /= 4.0;
+        return deathProbability / 100.0;
+    }
     /**
      * Accessor method to get the hire cost for any alpaca.
      *
@@ -81,32 +85,12 @@ public class Alpaca extends Animal
     }
 
     /**
-     * Accessor method to get the name of the alpaca.
-     *
-     * @return  The name as a String.
-     */
-    public String getName()
-    {
-        return this.name;
-    }
-
-    /**
      * Halves the maintenance cost of this alpaca.
      * This should be called when the alpaca dies.
      */
     public void halfMaintenanceCost()
     {
         this.setMaintenanceCost(this.maintenanceCost / 2);
-    }
-
-    /**
-     * Mutator method to set the name of the alpaca.
-     *
-     * @param name  The new name as a String.
-     */
-    public void setName(String name)
-    {
-        this.name = name;
     }
 
     /**

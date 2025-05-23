@@ -41,33 +41,6 @@ public double calculateAverageCost(ArrayList<SimulationResult> results) {
     return sum / count;
 }
 
-// public HashMap<String, Double> calculateAveragePredatorKills(List<SimulationResult> results) {
-//     HashMap<String, Integer> totalKills = new HashMap<>();
-//     HashMap<String, Double> averageKills = new HashMap<>();
-
-//     // Initialize with all known predators
-//     if (!results.isEmpty()) {
-//         HashMap<String, Integer> firstResultKills = results.get(0).getPredatorKills();
-//         for (String predator : firstResultKills.keySet()) {
-//             totalKills.put(predator, 0);
-//         }
-//     }
-//     // Accumulate kills
-//     for (SimulationResult result : results) {
-//         HashMap<String, Integer> kills = result.getPredatorKills();
-//         for (String predator : totalKills.keySet()) {
-//             int prev = totalKills.get(predator);
-//             int add = kills.get(predator) != null ? kills.get(predator) : 0;
-//             totalKills.put(predator, prev + add);
-//         }
-//     }
-//     // Calculate averages
-//     int simulationCount = results.size();
-//     for (String predator : totalKills.keySet()) {
-//         averageKills.put(predator, simulationCount > 0 ? (double) totalKills.get(predator) / simulationCount : 0);
-//     }
-//     return averageKills;
-// }
     public HashMap<String, Double> calculateAveragePredatorKills(ArrayList<SimulationResult> results) 
     {
         if (results.isEmpty()) return new HashMap<>();
