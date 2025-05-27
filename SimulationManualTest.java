@@ -15,9 +15,9 @@ public class SimulationManualTest {
         Farm farm = new Farm("Test Farm", state);
         
         // Add animals
-        for(int i=0; i<20; i++) farm.addSheepOnce(new Sheep());
-        for(int i=0; i<10; i++) farm.addLambOnce(new Lamb());
-        for(int i=0; i<2; i++) farm.addAlpacaOnce(new Alpaca());
+        for(int i=0; i<20; i++) farm.addSheepOnce();
+        for(int i=0; i<10; i++) farm.addLambOnce();
+        for(int i=0; i<2; i++) farm.addAlpacaOnce();
 
         // 2. Test with different protection levels
         testProtectionLevel(farm, "None");
@@ -45,20 +45,20 @@ public class SimulationManualTest {
 
     private static Farm cloneFarm(Farm original) {
         Farm clone = new Farm(original.getFarmName(), original.getState());
-        for(Object o : original.getSheeps()) clone.addSheepOnce(new Sheep());
-        for(Object o : original.getLambs()) clone.addLambOnce(new Lamb());
-        for(Alpaca a : original.getAlpacas()) clone.addAlpacaOnce(new Alpaca());
+        for(Object o : original.getSheeps()) clone.addSheepOnce();
+        for(Object o : original.getLambs()) clone.addLambOnce();
+        for(Alpaca a : original.getAlpacas()) clone.addAlpacaOnce();
         return clone;
     }
 
     private static void setAlpacasForProtection(Farm farm, String level) {
         farm.setAlpacas(new ArrayList<>());
         if(level.equals("Single Alpaca")) {
-            farm.addAlpacaOnce(new Alpaca());
+            farm.addAlpacaOnce();
         } 
         else if(level.equals("Pair of Alpacas")) {
-            farm.addAlpacaOnce(new Alpaca());
-            farm.addAlpacaOnce(new Alpaca());
+            farm.addAlpacaOnce();
+            farm.addAlpacaOnce();
         }
     }
 

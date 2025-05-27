@@ -1,9 +1,9 @@
-Farm name: ssssss
-Number of sheep: 10
-Number of lambs: 10
+Farm name: asdfasdf
+Number of sheep: 5
+Number of lambs: 5
 Recommended level of protection: Protection: 0 alpacas
-Protection cost: $1085.00
-Average predicted number of animal lost: 5.10
+Protection cost: $550.00
+Average predicted number of animal lost: 2.60
 Most troublesome predator:
-    Feral Pig, kill average: 2.1
+ Feral Pig, kill average: 1.2
 

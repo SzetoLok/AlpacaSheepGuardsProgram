@@ -32,6 +32,8 @@ public abstract class Animal
     
     public abstract double getDeathProbability(Predator predator, int numberOfAlpacas);
     
+    public abstract double getDeathProbability(double deathProbability, int numberOfAlpacas);
+
     public String getName() 
     {
         return this.name;

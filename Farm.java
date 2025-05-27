@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Farm 
 {
@@ -26,19 +27,20 @@ public class Farm
         this.alpacas = new ArrayList<Alpaca>();
     }
 
-    public void addSheepOnce(Sheep sheep) 
+
+    public void addSheepOnce() 
     {
-        this.sheeps.add(sheep);
+        this.sheeps.add(new Sheep(true, "Sheep"));
     }
     
-    public void addLambOnce(Lamb lamb) 
+    public void addLambOnce() 
     {
-        this.lambs.add(lamb);
+        this.lambs.add(new Lamb(true, "Lamb"));
     }
     
-    public void addAlpacaOnce(Alpaca alpaca) 
+    public void addAlpacaOnce() 
     {
-        this.alpacas.add(alpaca);
+        this.alpacas.add(new Alpaca(true, "Alpaca"));
     }
 
     public void display()
@@ -54,6 +56,16 @@ public class Farm
     public String getFarmName() 
     {
         return this.farmName;
+    }
+
+    public String[] getPredatorsNames() 
+    {
+        return this.getState().getPredatorsNames();
+    }
+
+    public HashMap<String, Double> getPredatorsNamesAndDangerFactors() 
+    {
+        return this.getState().getPredatorsNamesAndDangerFactors();
     }
 
     public int getTotalAlpacas() 
@@ -77,6 +89,17 @@ public class Farm
         return this.sheeps;
     }
 
+    public int getTotalAlpacaMaintenanceCost() 
+    {
+        int totalCost = 0;
+
+        for (Alpaca alpaca : this.alpacas) 
+        {
+            totalCost += alpaca.getMaintenanceCost();
+        }
+        return totalCost;
+    }
+
     public int getTotalSheeps() 
     {
         return this.sheeps.size();
@@ -96,6 +119,11 @@ public class Farm
         return null;
     }
 
+    public void initializeState(String[] stateData)
+    {
+        this.state = new State(stateData);
+    }
+
     public void setAlpacas(ArrayList<Alpaca> alpacas) 
     {
         this.alpacas = alpacas;
@@ -111,20 +139,9 @@ public class Farm
         this.lambs = lambs;
     }
 
-    public void setPredators(Predator[] predators) 
-    {
-        this.state.setPredators(predators);
-    }
-
     public void setSheeps(ArrayList<Sheep> sheeps) 
     {
         this.sheeps = sheeps;
-    }
-
-
-    public void setSpecificPredator(int index, Predator predator) 
-    {
-        state.setSpecificPredator(index, predator);
     }
 
     @Override
@@ -149,38 +166,6 @@ public class Farm
         stringBuffer.append("\n");
 
         return stringBuffer.toString();
-    }
-
-    public static void main(String[] args) {
-        FileIO fileIO = new FileIO("predators.txt");
-        ArrayList<State> states = fileIO.readFile();
-
-        // 2. Check if states were loaded
-        if (states == null || states.isEmpty()) {
-            System.out.println("No states loaded from file.");
-            return;
-        }
-
-        // 3. Use the first state for the test farm (e.g., VIC)
-        State testState = states.get(2);
-
-        // 4. Create the farm
-        Farm farm = new Farm("Green Pastures", testState);
-
-        // 5. Add animals
-        for (int i = 0; i < 5; i++) farm.addSheepOnce(new Sheep());
-        for (int i = 0; i < 3; i++) farm.addLambOnce(new Lamb());
-        farm.addAlpacaOnce(new Alpaca());
-
-        // 6. Display farm info
-        System.out.println("\nFarm information:");
-        farm.display();
-
-        // 7. Show state and predator info
-        System.out.println("\nState and predator information:");
-        testState.display();
-
-
     }
 
 }

@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class StatisticalCalculator {
     public double calculateAverageAnimalLoss(ArrayList<SimulationResult> results, String animalType) {

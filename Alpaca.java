@@ -21,8 +21,8 @@ public class Alpaca extends Animal
      */
     public Alpaca()
     {
-        super(true, "Alpaca");
-        this.maintenanceCost = 400 + (int)(Math.random() * 200);
+        super(false, "Unknown");
+        this.maintenanceCost = 0;
     }
 
     /**
@@ -31,10 +31,10 @@ public class Alpaca extends Animal
      * @param maintenanceCost   The yearly maintenance cost in whole dollars.
      * @param name              The name of the alpaca.
      */
-    public Alpaca(int maintenanceCost, String name)
+    public Alpaca(boolean alive, String name)
     {
-        super(true, name);
-        this.maintenanceCost = maintenanceCost;
+        super(alive, name);
+        this.maintenanceCost = 400 + (int)(Math.random() * 200);
     }
 
     /**
@@ -50,10 +50,10 @@ public class Alpaca extends Animal
     /**
      * Displays the state of the alpaca by printing its string representation.
      */
-    public void display()
-    {
-        System.out.println(this.toString());
-    }
+    // public void display()
+    // {
+    //     System.out.println(this.toString());
+    // }
 
     public double getDeathProbability(Predator predator, int numberOfAlpacas)
     {
@@ -64,6 +64,16 @@ public class Alpaca extends Animal
             deathProbability /= 4.0;
         return deathProbability / 100.0;
     }
+
+    public double getDeathProbability(double deathProbability, int numberOfAlpacas)
+    {
+        if (numberOfAlpacas == 1) 
+            deathProbability /= 2.0;
+        else if (numberOfAlpacas >= 2) 
+            deathProbability /= 4.0;
+        return deathProbability / 100.0;
+    }
+
     /**
      * Accessor method to get the hire cost for any alpaca.
      *
@@ -112,8 +122,9 @@ public class Alpaca extends Animal
     @Override
     public String toString()
     {
-        return this.getName() + " [alive=" + getAlive() +
+        return super.toString() + 
                 "\nmaintenanceCost=" + this.maintenanceCost +
                 "\nhireCost=" + HIRE_COST + "]";
     }
+
 }

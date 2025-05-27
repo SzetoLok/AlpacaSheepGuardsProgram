@@ -2,12 +2,12 @@ public class Lamb extends Animal
 {
     public Lamb() 
     {
-        super(true, "Lamb");
+        super(false, "Unknown");
     }
 
-    public Lamb(String name) 
+    public Lamb(boolean alive, String name) 
     {
-        super(true, name);
+        super(alive, name);
     }
     
     @Override
@@ -22,9 +22,13 @@ public class Lamb extends Animal
     }
 
     @Override
-    public String toString() 
+    public double getDeathProbability(double deathProbability, int numberOfAlpacas) 
     {
-        return this.getName() + " [alive=" + this.getAlive() + "]";
+        deathProbability *= 2.0;
+        if (numberOfAlpacas == 1) 
+            deathProbability /= 2.0;
+        else if (numberOfAlpacas >= 2) 
+            deathProbability /= 4.0;
+        return deathProbability;
     }
-
 }

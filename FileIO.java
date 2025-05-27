@@ -21,42 +21,30 @@ public class FileIO
         return this.fileName;
     }
 
-    public ArrayList<State> readFile() 
+     
+    public ArrayList<String[]> readFile()
     {
-        ArrayList<State> states = new ArrayList<State>();
+        ArrayList<String[]> statesData = new ArrayList<>();
 
-        try (FileReader reader = new FileReader(fileName)) 
+        try (FileReader reader = new FileReader(fileName))
         {
             String line;
-            String[] predatorNames = {"Fox", "Dingo", "Feral Pig", "Wedge-tailed Eagle"};
             Scanner fileInput = new Scanner(reader);
 
-            while (fileInput.hasNextLine() == true) 
+            while (fileInput.hasNextLine() == true)
             {
                 line = fileInput.nextLine().trim();
-                String[] parts = line.split(",");
-
-                String stateName = parts[0]; 
-                Predator[] predators = new Predator[parts.length - 1];
-                
-                for (int i = 0; i < parts.length - 1; i++) 
-                {
-                    double dangerFactor = Double.parseDouble(parts[i + 1]);
-                    predators[i] = new Predator(predatorNames[i], 
-                                                dangerFactor);
-                }
-                
-                State state = new State(stateName, predators);
-                states.add(state);
+                String[] stateParts = line.split(",");
+                statesData.add(stateParts);
             }
-        } 
-        catch (IOException e) 
+        }
+        catch (IOException e)
         {
             System.out.println("Error reading file: " + e);
         }
-        return states;
+        return statesData;
     }
-        
+
     public void setFileName(String fileName) 
     {
         this.fileName = fileName;
@@ -77,14 +65,16 @@ public class FileIO
 
         FileIO fileIO = new FileIO("predators.txt");
         System.out.println("Reading predator data from file:");
-        ArrayList<State> states = fileIO.readFile();
+        ArrayList<String[]> states = fileIO.readFile();
         
-        for (State state : states) {
-            System.out.println("\nState: " + state.getStateName());
-            for (Predator predator : state.getPredators()) {
-                System.out.println("  " + predator.getName() + 
-                                    ": " + predator.getDangerFactor());
+        for (String[] state : states) 
+        {
+            for (String info : state)
+            {
+                System.out.println(info);
             }
+            System.out.println("Next States: \n");
         }
-     }
+    }
+     
 }
