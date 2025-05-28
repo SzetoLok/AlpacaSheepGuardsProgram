@@ -4,11 +4,12 @@
  * a name, and a status (alive or dead).
  * When an alpaca dies, its maintenance cost is halved.
  *
- * @author Your Name
+ * @author Szeto Lok
  * @version ver1.0.0
  */
 public class Alpaca extends Animal
 {
+
     /** The yearly maintenance cost of the alpaca in whole dollars. */
     private int maintenanceCost;
 
@@ -16,8 +17,9 @@ public class Alpaca extends Animal
     public static final int HIRE_COST = 500;
 
     /**
-     * Default constructor which creates an alpaca with a random maintenance cost
-     * between $400 and $599 (inclusive) and no name.
+     * Default constructor which creates an alpaca with a random 
+     * maintenance cost between $400 and $599 (inclusive) and no name.
+     * 
      */
     public Alpaca()
     {
@@ -26,10 +28,11 @@ public class Alpaca extends Animal
     }
 
     /**
-     * Non-default constructor which creates an alpaca with a specified maintenance cost and name.
+     * Non-default constructor which creates an alpaca with a 
+     * specified maintenance cost and name.
      *
-     * @param maintenanceCost   The yearly maintenance cost in whole dollars.
-     * @param name              The name of the alpaca.
+     * @param alive The alive status of the alpaca.
+     * @param name The name of the alpaca.
      */
     public Alpaca(boolean alive, String name)
     {
@@ -48,36 +51,32 @@ public class Alpaca extends Animal
     }
 
     /**
-     * Displays the state of the alpaca by printing its string representation.
+     * Returns the death probability for this alpaca given a 
+     * base probability and number of alpacas.
+     *
+     * @param deathProbability The base death probability.
+     * @param numberOfAlpacas The number of alpacas protecting the farm.
+     * @return The probability of death as a double.
      */
-    // public void display()
-    // {
-    //     System.out.println(this.toString());
-    // }
-
-    public double getDeathProbability(Predator predator, int numberOfAlpacas)
+    @Override
+    public double getDeathProbability(double deathProbability, 
+                                        int numberOfAlpacas)
     {
-        double deathProbability = predator.getDangerFactor();
-        if (numberOfAlpacas == 1) 
+        if (numberOfAlpacas == 1)
+        {
             deathProbability /= 2.0;
-        else if (numberOfAlpacas >= 2) 
+        }
+        else if (numberOfAlpacas >= 2)
+        {
             deathProbability /= 4.0;
-        return deathProbability / 100.0;
-    }
-
-    public double getDeathProbability(double deathProbability, int numberOfAlpacas)
-    {
-        if (numberOfAlpacas == 1) 
-            deathProbability /= 2.0;
-        else if (numberOfAlpacas >= 2) 
-            deathProbability /= 4.0;
+        }
         return deathProbability / 100.0;
     }
 
     /**
      * Accessor method to get the hire cost for any alpaca.
      *
-     * @return  The hire cost as an integer.
+     * @return The hire cost as an integer.
      */
     public static int getHireCost()
     {
@@ -87,7 +86,7 @@ public class Alpaca extends Animal
     /**
      * Accessor method to get the maintenance cost of this alpaca.
      *
-     * @return  The maintenance cost as an integer.
+     * @return The maintenance cost as an integer.
      */
     public int getMaintenanceCost()
     {
@@ -106,7 +105,7 @@ public class Alpaca extends Animal
     /**
      * Mutator method to set the maintenance cost of the alpaca.
      *
-     * @param maintenanceCost   The new maintenance cost as an integer.
+     * @param maintenanceCost The new maintenance cost as an integer.
      */
     public void setMaintenanceCost(int maintenanceCost)
     {
@@ -117,14 +116,13 @@ public class Alpaca extends Animal
      * Returns a string representation of the alpaca, including its name,
      * alive status, maintenance cost, and hire cost.
      *
-     * @return  The state of the alpaca as a formatted String.
+     * @return The state of the alpaca as a formatted String.
      */
     @Override
     public String toString()
     {
-        return super.toString() + 
-                "\nmaintenanceCost=" + this.maintenanceCost +
-                "\nhireCost=" + HIRE_COST + "]";
+        return super.toString() +
+            "\nmaintenanceCost=" + this.maintenanceCost +
+            "\nhireCost=" + HIRE_COST;
     }
-
 }

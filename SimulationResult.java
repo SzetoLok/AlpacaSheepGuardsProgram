@@ -1,14 +1,13 @@
+import java.util.HashMap;
+
 /**
  * Class which stores the results of a single simulation run,
  * including animal survivors, casualties, predator kills, total cost,
  * and protection level.
  *
- * @author Szeto Lok 35581492
+ * @author Szeto Lok 
  * @version ver1.0.0
  */
-
-import java.util.HashMap;
-
 public class SimulationResult
 {
     private HashMap<String, Integer> animalAlive;
@@ -17,37 +16,39 @@ public class SimulationResult
     private double totalCost;
     private String protectionLevel;
     public Farm farm;
+
     /**
      * Default constructor which creates the object of the class 
      * SimulationResult.
-     *
+     * 
      */
     public SimulationResult()
     {
-        this.animalAlive = new HashMap<>();
-        this.animalDeath = new HashMap<>();
-        this.predatorKills = new HashMap<>();
+        this.animalAlive = new HashMap<String, Integer>();
+        this.animalDeath = new HashMap<String, Integer>();
+        this.predatorKills = new HashMap<String, Integer>();
         this.protectionLevel = "Unknown";
         this.totalCost = 0.0;
+        this.farm = new Farm();
     }
 
     /**
-     * Non-default constructor which creates the object of the class 
-     * SimulationResult.
+     * Non-default constructor which creates the object of the 
+     * class SimulationResult.
      *
-     * @param animalAlive      A map with the number of each animal type alive.
-     * @param animalDeath      A map with the number of each animal type dead.
-     * @param predatorKills    A map with the number of kills by each predator.
-     * @param protectionLevel  The protection level in the simulation.
-     * @param totalCost        The total cost of a simulation.
+     * @param animalAlive A map with the number of each animal type alive.
+     * @param animalDeath A map with the number of each animal type dead.
+     * @param predatorKills A map with the number of kills by each predator.
+     * @param protectionLevel The protection level in the simulation.
+     * @param totalCost The total cost of a simulation.
+     * @param farm The Farm object used in the simulation.
      */
     public SimulationResult(HashMap<String, Integer> animalAlive,
                             HashMap<String, Integer> animalDeath,
                             HashMap<String, Integer> predatorKills,
                             String protectionLevel,
                             double totalCost,
-                            Farm farm
-                            )
+                            Farm farm)
     {
         this.animalAlive = animalAlive;
         this.animalDeath = animalDeath;
@@ -59,9 +60,8 @@ public class SimulationResult
 
     /**
      * Display method to print the state of the object.
-     *
      */
-    public void display() 
+    public void display()
     {
         System.out.println(this.toString());
     }
@@ -69,60 +69,60 @@ public class SimulationResult
     /**
      * Accessor method to get the map of animals alive.
      *
-     * @return      A map of animal types to the number alive.
+     * @return A map of animal types to the number alive.
      */
-    public HashMap<String, Integer> getAnimalAlive() 
+    public HashMap<String, Integer> getAnimalAlive()
     {
         return this.animalAlive;
     }
 
-   /**
+    /**
      * Accessor method to get the map of animals dead.
      *
-     * @return      A map of animal types to the number dead.
+     * @return A map of animal types to the number dead.
      */
-    public HashMap<String, Integer> getAnimalDeath() 
+    public HashMap<String, Integer> getAnimalDeath()
     {
         return this.animalDeath;
     }
 
     /**
+     * Accessor method to get the Farm object for this result.
+     *
+     * @return The Farm object used in the simulation.
+     */
+    public Farm getFarm()
+    {
+        return this.farm;
+    }
+
+    /**
      * Accessor method to get the map of predator kills.
      *
-     * @return      A map of predator names to the number of kills.
+     * @return A map of predator names to the number of kills.
      */
-    public HashMap<String, Integer> getPredatorKills() 
+    public HashMap<String, Integer> getPredatorKills()
     {
         return this.predatorKills;
     }
-    
+
     /**
      * Accessor method to get the protection level.
      *
-     * @return      The protection level as a String.
+     * @return The protection level as a String.
      */
-    public String getProtectionLevel() 
+    public String getProtectionLevel()
     {
         return this.protectionLevel;
     }
 
     /**
-     * Accessor method to get the total cost of the simulation run.
-     *
-     * @return      The total cost as a double.
-     */
-    public double getTotalCost()
-    {
-        return this.totalCost;
-    }
-
-    /**
      * Accessor method to get the number of a specific animal type alive.
      *
-     * @param animalType    The type of animal as a String.
-     * @return              The number of that animal type alive.
+     * @param animalType The type of animal as a String.
+     * @return The number of that animal type alive.
      */
-    public int getSpecificAnimalAlive(String animalType) 
+    public int getSpecificAnimalAlive(String animalType)
     {
         return this.animalAlive.getOrDefault(animalType, 0);
     }
@@ -130,10 +130,10 @@ public class SimulationResult
     /**
      * Accessor method to get the number of a specific animal type dead.
      *
-     * @param animalType    The type of animal as a String.
-     * @return              The number of that animal type dead.
+     * @param animalType The type of animal as a String.
+     * @return The number of that animal type dead.
      */
-    public int getSpecificAnimalDeath(String animalType) 
+    public int getSpecificAnimalDeath(String animalType)
     {
         return this.animalDeath.getOrDefault(animalType, 0);
     }
@@ -141,20 +141,30 @@ public class SimulationResult
     /**
      * Accessor method to get the number of kills by a specific predator.
      *
-     * @param predatorName  The name of the predator as a String.
-     * @return              The number of kills by that predator.
+     * @param predatorName The name of the predator as a String.
+     * @return The number of kills by that predator.
      */
-    public int getSpecificPredatorKills(String predatorName) 
+    public int getSpecificPredatorKills(String predatorName)
     {
         return this.predatorKills.getOrDefault(predatorName, 0);
     }
 
     /**
+     * Accessor method to get the total cost of the simulation run.
+     *
+     * @return The total cost as a double.
+     */
+    public double getTotalCost()
+    {
+        return this.totalCost;
+    }
+
+    /**
      * Mutator method to set the map of animals alive.
      *
-     * @param animalAlive   A map of animal types to the number alive.
+     * @param animalAlive A map of animal types to the number alive.
      */
-    public void setAnimalAlive(HashMap<String, Integer> animalAlive) 
+    public void setAnimalAlive(HashMap<String, Integer> animalAlive)
     {
         this.animalAlive = animalAlive;
     }
@@ -162,11 +172,21 @@ public class SimulationResult
     /**
      * Mutator method to set the map of animals dead.
      *
-     * @param animalDeath   A map of animal types to the number dead.
+     * @param animalDeath A map of animal types to the number dead.
      */
-    public void setAnimalDeath(HashMap<String, Integer> animalDeath) 
+    public void setAnimalDeath(HashMap<String, Integer> animalDeath)
     {
         this.animalDeath = animalDeath;
+    }
+
+    /**
+     * Mutator method to set the Farm object for this result.
+     *
+     * @param farm The Farm object to set.
+     */
+    public void setFarm(Farm farm)
+    {
+        this.farm = farm;
     }
 
     /**
@@ -174,7 +194,7 @@ public class SimulationResult
      *
      * @param predatorKills A map of predator names to the number of kills.
      */
-    public void setPredatorKills(HashMap<String, Integer> predatorKills) 
+    public void setPredatorKills(HashMap<String, Integer> predatorKills)
     {
         this.predatorKills = predatorKills;
     }
@@ -182,9 +202,9 @@ public class SimulationResult
     /**
      * Mutator method to set the protection level.
      *
-     * @param protectionLevel   The protection level as a String.
+     * @param protectionLevel The protection level as a String.
      */
-    public void setProtectionLevel(String protectionLevel) 
+    public void setProtectionLevel(String protectionLevel)
     {
         this.protectionLevel = protectionLevel;
     }
@@ -192,9 +212,9 @@ public class SimulationResult
     /**
      * Mutator method to set the total cost of the simulation run.
      *
-     * @param totalCost     The total cost as a double.
+     * @param totalCost The total cost as a double.
      */
-    public void setTotalCost(double totalCost) 
+    public void setTotalCost(double totalCost)
     {
         this.totalCost = totalCost;
     }
@@ -202,16 +222,16 @@ public class SimulationResult
     /**
      * Returns a string representation of the SimulationResult object.
      *
-     * @return      The state of the object as a formatted String.
+     * @return The state of the object as a formatted String.
      */
     @Override
-    public String toString() 
+    public String toString()
     {
         return "SimulationResult " +
-                "\n  Protection Level: " + protectionLevel +
-                "\n  Animals Alive: " + animalAlive +
-                "\n  Animals Dead: " + animalDeath +
-                "\n  Predator Kills: " + predatorKills +
-                "\n  Total Cost: $" + String.format("%.2f", totalCost);
+            "\n Protection Level: " + protectionLevel +
+            "\n Animals Alive: " + animalAlive +
+            "\n Animals Dead: " + animalDeath +
+            "\n Predator Kills: " + predatorKills +
+            "\n Total Cost: $" + String.format("%.2f", totalCost);
     }
 }

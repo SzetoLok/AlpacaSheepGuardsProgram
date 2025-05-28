@@ -2,36 +2,62 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class FileIO 
+/**
+ * Class which handles file input and output operations for state and 
+ * predator data.
+ *
+ * @author Szeto Lok
+ * @version ver1.0.0
+ */
+public class FileIO
 {
     private String fileName;
 
+    /**
+     * Default constructor which creates a FileIO object with 
+     * an unknown file name.
+     * 
+     */
     public FileIO()
     {
         this.fileName = "Unknown";
     }
 
+    /**
+     * Non-default constructor which creates a FileIO object with 
+     * the given file name.
+     *
+     * @param fileName The name of the file.
+     */
     public FileIO(String fileName)
     {
         this.fileName = fileName;
     }
 
-    public String getFileName() 
+    /**
+     * Accessor method to get the file name.
+     *
+     * @return The file name as a String.
+     */
+    public String getFileName()
     {
         return this.fileName;
     }
 
-     
+    /**
+     * Reads the state and predator data from the file.
+     *
+     * @return An ArrayList of String arrays, each representing 
+     * a state's data.
+     */
     public ArrayList<String[]> readFile()
     {
         ArrayList<String[]> statesData = new ArrayList<>();
-
         try (FileReader reader = new FileReader(fileName))
         {
             String line;
             Scanner fileInput = new Scanner(reader);
-
-            while (fileInput.hasNextLine() == true)
+            while (fileInput.hasNextLine())
             {
                 line = fileInput.nextLine().trim();
                 String[] stateParts = line.split(",");
@@ -45,36 +71,30 @@ public class FileIO
         return statesData;
     }
 
-    public void setFileName(String fileName) 
+    /**
+     * Mutator method to set the file name.
+     *
+     * @param fileName The file name as a String.
+     */
+    public void setFileName(String fileName)
     {
         this.fileName = fileName;
     }
-    
-    public void writeFile(String content) 
+
+    /**
+     * Writes the given content to the file.
+     *
+     * @param content The content to write to the file.
+     */
+    public void writeFile(String content)
     {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) 
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
         {
             writer.println(content);
-        } catch (IOException e) 
+        }
+        catch (IOException e)
         {
             System.out.println("Error writing to file: " + e);
         }
     }
-     public static void main(String[] args) 
-     {
-
-        FileIO fileIO = new FileIO("predators.txt");
-        System.out.println("Reading predator data from file:");
-        ArrayList<String[]> states = fileIO.readFile();
-        
-        for (String[] state : states) 
-        {
-            for (String info : state)
-            {
-                System.out.println(info);
-            }
-            System.out.println("Next States: \n");
-        }
-    }
-     
 }

@@ -1,158 +1,233 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Class which manages the simulation workflow for the Alpaca 
+ * Sheep Guards program. Handles farm initialization, simulation runs,
+ * statistical calculations, and reporting.
+ *
+ * @author Szeto Lok
+ * @version ver1.0.0
+ */
 public class AlpacaSheepGuards
 {
 
     private static final int NUM_SIMULATIONS = 10;
-
-    private static final String[] PROTECTION_LEVELS = {"0 alpaca", "1 alpaca", "2 alpacas"};
-
-    private HashMap<String, ArrayList<SimulationResult>> allSimulationResults;
+    private static final String[] PROTECTION_LEVELS = 
+                        {"0 alpaca", "1 alpaca", "2 alpacas"};
 
     private Farm farm;
-
+    private HashMap<String, ArrayList<SimulationResult>> allSimulationResults;
     private HashMap<String, ProtectionLevelResult> allProtectionLevelResults;
 
-    // Default constructor
+    /**
+     * Default constructor which creates an AlpacaSheepGuards object with 
+     * default values.
+     * 
+     */
     public AlpacaSheepGuards()
     {
         this.farm = new Farm();
-        this.allSimulationResults = new HashMap<String, ArrayList<SimulationResult>>();
-        this.allProtectionLevelResults = new HashMap<String, ProtectionLevelResult>();
+        this.allSimulationResults = new HashMap<>();
+        this.allProtectionLevelResults = new HashMap<>();
     }
 
-    // Non-default constructor
-    public AlpacaSheepGuards(Farm farm, HashMap<String, ArrayList<SimulationResult>> allResults,
-                             HashMap<String, ProtectionLevelResult> allProtectionLevelResults)
+    /**
+     * Non-default constructor which creates an AlpacaSheepGuards object 
+     * with specified fields.
+     *
+     * @param farm The Farm object to use.
+     * @param allSimulationResults The simulation results map.
+     * @param allProtectionLevelResults The protection level results map.
+     */
+    public AlpacaSheepGuards(Farm farm,
+            HashMap<String, ArrayList<SimulationResult>> allSimulationResults,
+            HashMap<String, ProtectionLevelResult> allProtectionLevelResults)
     {
         this.farm = farm;
-        this.allSimulationResults = allResults;
+        this.allSimulationResults = allSimulationResults;
         this.allProtectionLevelResults = allProtectionLevelResults;
     }
 
-    public void calculateProtectionLevelResultOnce(String protectionLevel, ArrayList<SimulationResult> results, Predator[] predators)
+    /**
+     * Builds the summary report string for the recommended protection level.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult to report.
+     * @return The formatted report string.
+     */
+    public String buildFileReport(ProtectionLevelResult protectionLevelResult)
     {
-        StatisticalCalculator stats = new StatisticalCalculator();
-        ProtectionLevelResult protectionLevelResult = new ProtectionLevelResult();
-
-        protectionLevelResult.setProtectionLevel(protectionLevel);
-        protectionLevelResult.setAverageCost(stats.calculateAverageCost(results));
-        protectionLevelResult.setLowestCost(stats.calculateLowestCost(results));
-        protectionLevelResult.setHighestCost(stats.calculateHighestCost(results));
-        protectionLevelResult.setAverageSheepLost(stats.calculateAverageAnimalLoss(results, "Sheep"));
-        protectionLevelResult.setAverageLambLost(stats.calculateAverageAnimalLoss(results, "Lamb"));
-        protectionLevelResult.setAverageAlpacaLost(stats.calculateAverageAnimalLoss(results, "Alpaca"));
-
-        HashMap<String, Double> avgKills = stats.calculateAveragePredatorKills(results);
-        protectionLevelResult.setAveragePredatorKills(avgKills);
-        protectionLevelResult.setMostTroublesomePredators(findMostTroublesomePredators(avgKills));
-        protectionLevelResult.setZeroKillPredators(findZeroKillPredators(avgKills, predators));
-        allProtectionLevelResults.put(protectionLevel, protectionLevelResult);
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append(formatFarmInfo());
+        stringBuffer.append(formatProtectionInfo(protectionLevelResult));
+        stringBuffer.append(formatAnimalLossInfo(protectionLevelResult));
+        stringBuffer.append(
+                    formatTroublesomePredatorsInfo(protectionLevelResult));
+        return stringBuffer.toString();
     }
 
-    public void calculateProtectionLevelResults(Predator[] predators)
+    /**
+     * Calculates and stores statistics for all protection levels.
+     */
+    public void calculateProtectionLevelResults()
     {
         for (String protectionLevel : PROTECTION_LEVELS)
         {
-            calculateProtectionLevelResultOnce(protectionLevel, allSimulationResults.get(protectionLevel), predators);
+            calculateProtectionLevelResultOnce(protectionLevel, 
+                                allSimulationResults.get(protectionLevel));
         }
     }
 
-    public void displayEachLevel(ProtectionLevelResult protectionLevelResult, Predator[] predators)
+    /**
+     * Calculates and stores the statistics for a single protection level.
+     *
+     * @param protectionLevel The protection level to calculate for.
+     * @param simulationResults The list of SimulationResult objects.
+     */
+    public void calculateProtectionLevelResultOnce(String protectionLevel, 
+                                ArrayList<SimulationResult> simulationResults)
     {
-        System.out.println("\n=== " + protectionLevelResult.getProtectionLevel() + " ===");
-        System.out.printf("Average Total Cost: $%.2f%n", protectionLevelResult.getAverageCost());
-        System.out.printf("Lowest Total Cost: $%.2f%n", protectionLevelResult.getLowestCost());
-        System.out.printf("Highest Total Cost: $%.2f%n", protectionLevelResult.getHighestCost());
+        StatisticalCalculator calculator = new StatisticalCalculator();
+        ProtectionLevelResult protectionLevelResult = 
+                                    new ProtectionLevelResult();
+        protectionLevelResult.setProtectionLevel(protectionLevel);
+        protectionLevelResult
+            .setAverageCost(calculator
+                            .calculateAverageCost(simulationResults));
 
-        System.out.println("\nAverage Animals Lost:");
-        System.out.printf("  Sheep:   %.2f%n", protectionLevelResult.getAverageSheepLost());
-        System.out.printf("  Lambs:   %.2f%n", protectionLevelResult.getAverageLambLost());
-        System.out.printf("  Alpacas: %.2f%n", protectionLevelResult.getAverageAlpacaLost());
+        protectionLevelResult
+            .setLowestCost(calculator.calculateHighestCost(simulationResults));
 
-        System.out.println("\nAverage Predator Kills:");
-        HashMap<String, Double> avgKills = protectionLevelResult.getAveragePredatorKills();
-        for (HashMap.Entry<String, Double> entry : avgKills.entrySet())
-        {
-            String name = entry.getKey();
-            if (name.equals("Feral Pig"))
-            {
-                name = "Pig";
-            }
-            else if (name.equals("Wedge-tailed Eagle"))
-            {
-                name = "Eagle";
-            }
-            System.out.printf("  %-12s: %.2f%n", name, entry.getValue());
-        }
+        protectionLevelResult
+            .setHighestCost(calculator.calculateLowestCost(simulationResults));
 
-        System.out.println("\nMost Troublesome Predators:");
-        ArrayList<String> mostTroublesome = protectionLevelResult.getMostTroublesomePredators();
-        for (String predator : mostTroublesome)
-        {
-            System.out.println("  - " + predator);
-        }
+        protectionLevelResult
+            .setAverageSheepLost(
+                calculator.calculateAverageAnimalLoss(simulationResults, 
+                                            "Sheep"));
 
-        ArrayList<String> zeroKillers = protectionLevelResult.getZeroKillPredators();
-        if (!zeroKillers.isEmpty())
-        {
-            System.out.println("Predators with Zero Kills:");
-            for (String predator : zeroKillers)
-            {
-                System.out.println("  - " + predator);
-            }
-        }
+        protectionLevelResult
+            .setAverageLambLost(
+                calculator.calculateAverageAnimalLoss(simulationResults,
+                                            "Lamb"));
+
+        protectionLevelResult
+            .setAverageAlpacaLost(
+                calculator.calculateAverageAnimalLoss(simulationResults, 
+                                            "Alpaca"));
+
+        HashMap<String, Double> averageKills = 
+                                calculator.calculateAveragePredatorKills(
+                                                        simulationResults);
+
+        protectionLevelResult.setAveragePredatorKills(averageKills);
+        protectionLevelResult
+            .setMostTroublesomePredators(
+                findMostTroublesomePredators(averageKills));
+
+        protectionLevelResult
+            .setZeroKillPredators(findZeroKillPredators(averageKills));
+
+        allProtectionLevelResults.put(protectionLevel, protectionLevelResult);
     }
 
+    /**
+     * Display method to print the state of the AlpacaSheepGuards object.
+     *
+     * @return The state of the object as a formatted String.
+     */
+    public String display()
+    {
+        return this.toString();
+    }
+
+    /**
+     * Displays all statistics for a protection level.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult containing all statistics.
+     */
+    public void displayEachLevel(ProtectionLevelResult protectionLevelResult)
+    {
+        printProtectionLevelHeader(protectionLevelResult);
+        printCostStatistics(protectionLevelResult);
+        printAnimalLossStatistics(protectionLevelResult);
+        printPredatorKills(protectionLevelResult);
+    }
+
+    /**
+     * Displays the final recommendation report for the 
+     * selected protection level.
+     *
+     * @param recommendedLevel The protection level to display results for.
+     */
     public void displayFinalRecommendation(String recommendedLevel)
     {
-        ProtectionLevelResult result = allProtectionLevelResults.get(recommendedLevel);
-        double lowestAvgCost = result.getAverageCost();
-        int alpacaCount = getAlpacaCountForLevel(recommendedLevel);
-
-        System.out.println("\n=============================");
-        System.out.println("End of Simulation Report");
-        System.out.println("=============================");
-        System.out.printf("Lowest average cost: $%.2f%n", lowestAvgCost);
-        System.out.println("Protection: " + alpacaCount + " alpaca" + (alpacaCount != 1 ? "s" : ""));
-
-        System.out.println("    Troublesome predator:");
-        for (String predator : result.getMostTroublesomePredators())
-        {
-            double kills = result.getAveragePredatorKills().get(predator);
-            System.out.printf("        %s, kill average: %.1f%n", predator, kills);
-        }
-        ArrayList<String> zeroKillers = result.getZeroKillPredators();
-        if (zeroKillers.isEmpty())
-        {
-            System.out.println("    All predators killed at least one animal");
-        }
-        else
-        {
-            System.out.println("    " + zeroKillers.size() + " predators that had no kill:");
-            System.out.println("        " + String.join(", ", zeroKillers));
-        }
-        System.out.println("\nA report has been written to: alpacaSheepGuardViability.txt");
-        System.out.println("Goodbye");
+        ProtectionLevelResult protectionLevelResult = allProtectionLevelResults
+                                                        .get(recommendedLevel);
+        printReportHeader();
+        printCostAndProtectionDetails(protectionLevelResult);
+        printTroublesomePredators(protectionLevelResult);
+        printZeroKillPredators(protectionLevelResult);
+        printReportFooter();
     }
 
+    /**
+     * Displays simulation results for each protection level.
+     */
     public void displayLevels()
     {
-        for (String level : PROTECTION_LEVELS)
+        for (String protectionLevel : PROTECTION_LEVELS)
         {
-            ProtectionLevelResult protectionLevelResult = allProtectionLevelResults.get(level);
-            displayEachLevel(protectionLevelResult, farm.getState().getPredators());
+            ProtectionLevelResult protectionLevelResult = 
+                             allProtectionLevelResults.get(protectionLevel);
+            displayEachLevel(protectionLevelResult);
         }
     }
 
+    /**
+     * Finds the predator(s) with the highest average kills.
+     *
+     * @param averagePredatorKills The map of average predator kills.
+     * @return An ArrayList of the most troublesome predator names.
+     */
+    public ArrayList<String> findMostTroublesomePredators(
+                                HashMap<String, Double> averagePredatorKills)
+    {
+        ArrayList<String> predators = new ArrayList<String>();
+        double maximumKills = -1.0;
+        for (HashMap.Entry<String, Double> entry : 
+                            averagePredatorKills.entrySet())
+        {
+            double kills = entry.getValue();
+            String predator = entry.getKey();
+            if (kills > maximumKills)
+            {
+                maximumKills = kills;
+                predators.clear();
+                predators.add(predator);
+            }
+            else if (kills == maximumKills)
+            {
+                predators.add(predator);
+            }
+        }
+        return predators;
+    }
+
+    /**
+     * Finds and returns the recommended protection level 
+     * (lowest average cost).
+     *
+     * @return The recommended protection level as a String.
+     */
     public String findRecommendedLevel()
     {
         String recommendedLevel = "";
         double lowestAverageCost = Double.MAX_VALUE;
         for (String level : allProtectionLevelResults.keySet())
         {
-            double averageCost = allProtectionLevelResults.get(level).getAverageCost();
+            double averageCost = allProtectionLevelResults
+                                .get(level).getAverageCost();
             if (averageCost < lowestAverageCost)
             {
                 lowestAverageCost = averageCost;
@@ -162,43 +237,155 @@ public class AlpacaSheepGuards
         return recommendedLevel;
     }
 
-    public ArrayList<String> findMostTroublesomePredators(HashMap<String, Double> averagePredatorKills)
-    {
-        ArrayList<String> predators = new ArrayList<String>();
-        double maxKills = -1.0;
-        for (HashMap.Entry<String, Double> entry : averagePredatorKills.entrySet())
-        {
-            double kills = entry.getValue();
-            String predator = entry.getKey();
-            if (kills > maxKills)
-            {
-                maxKills = kills;
-                predators.clear();
-                predators.add(predator);
-            }
-            else if (kills == maxKills)
-            {
-                predators.add(predator);
-            }
-        }
-        return predators;
-    }
-
-    public ArrayList<String> findZeroKillPredators(HashMap<String, Double> averagePredatorKills, Predator[] predators)
+    /**
+     * Finds the predator(s) with zero kills.
+     *
+     * @param averagePredatorKills The map of average predator kills.
+     * @return An ArrayList of predator names with zero kills.
+     */
+    public ArrayList<String> findZeroKillPredators(
+                                HashMap<String, Double> averagePredatorKills)
     {
         ArrayList<String> zeroKillers = new ArrayList<String>();
-        for (Predator predator : predators)
+        String[] predatorsNames = this.getFarm().getPredatorsNames();
+        for (String predatorName : predatorsNames)
         {
-            String name = predator.getName();
-            if (averagePredatorKills.getOrDefault(name, 0.0) == 0.0)
+            if (averagePredatorKills.getOrDefault(predatorName, 0.0) == 0.0)
             {
-                zeroKillers.add(name);
+                zeroKillers.add(predatorName);
             }
         }
         return zeroKillers;
     }
 
-    private int getAlpacaCountForLevel(String protectionLevel)
+    /**
+     * Formats the predicted animal loss information for the report.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult to report.
+     * @return The formatted animal loss string.
+     */
+    public String formatAnimalLossInfo(
+            ProtectionLevelResult protectionLevelResult)
+    {
+        double totalLost = protectionLevelResult.getAverageSheepLost()
+            + protectionLevelResult.getAverageLambLost()
+            + protectionLevelResult.getAverageAlpacaLost();
+        return String.format("Average predicted number of animal lost: %.2f%n", 
+                                totalLost);
+    }
+
+    /**
+     * Formats the farm's basic information for the report.
+     *
+     * @return The formatted farm information string.
+     */
+    public String formatFarmInfo()
+    {
+        return String.format(
+            "Farm name: %s%nNumber of sheep: %d%nNumber of lambs: %d%n",
+            farm.getFarmName(),
+            farm.getTotalSheeps(),
+            farm.getTotalLambs());
+    }
+
+    /**
+     * Formats predator names for display.
+     *
+     * @param name The original predator name.
+     * @return The formatted display name.
+     */
+    public String formatPredatorName(String name)
+    {
+        if (name.equals("Feral Pig")) return "Pig";
+        if (name.equals("Wedge-tailed Eagle")) return "Eagle";
+        return name;
+    }
+
+    /**
+     * Formats the protection level and cost information for the report.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult to report.
+     * @return The formatted protection level and cost string.
+     */
+    public String formatProtectionInfo(
+                            ProtectionLevelResult protectionLevelResult)
+    {
+        int alpacaCount = getAlpacaCountForLevel(protectionLevelResult
+                                                .getProtectionLevel());
+        return String.format(
+            "Recommended level of protection: Protection: %d alpaca%s%nProtection cost: $%.2f%n",
+            alpacaCount,
+            ((alpacaCount != 0 && alpacaCount != 1) ? "s" : ""),
+            protectionLevelResult.getAverageCost()
+        );
+    }
+
+    /**
+     * Formats the most troublesome predator(s) information for the report.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult to report.
+     * @return The formatted troublesome predator string.
+     */
+    public String formatTroublesomePredatorsInfo(
+                            ProtectionLevelResult protectionLevelResult)
+    {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("Most troublesome predator:\n");
+        for (String predator : protectionLevelResult
+                                .getMostTroublesomePredators())
+        {
+            double kills = protectionLevelResult
+                            .getAveragePredatorKills().get(predator);
+            stringBuffer.append(String.format(" %s, kill average: %.1f%n",
+                                             predator, 
+                                             kills));
+        }
+        return stringBuffer.toString();
+    }
+
+    /**
+     * Generates and writes the summary report for the recommended 
+     * protection level.
+     *
+     * @param recommendedLevel The recommended protection level string.
+     */
+    public void generateFileReport(String recommendedLevel)
+    {
+        ProtectionLevelResult protectionLevelResult = allProtectionLevelResults
+                                                        .get(recommendedLevel);
+        String report = buildFileReport(protectionLevelResult);
+        FileIO fileIO = new FileIO("alpacaSheepGuardViability.txt");
+        fileIO.writeFile(report);
+    }
+
+    /**
+     * Accessor method to get the map of all protection level results.
+     *
+     * @return The HashMap of protection level results.
+     */
+    public HashMap<String,ProtectionLevelResult> getAllProtectionLevelResults()
+    {
+        return this.allProtectionLevelResults;
+    }
+
+    /**
+     * Accessor method to get the map of all simulation results.
+     *
+     * @return The HashMap of simulation results.
+     */
+    public HashMap<String,ArrayList<SimulationResult>> getAllSimulationResults()
+    {
+        return this.allSimulationResults;
+    }
+
+    /**
+     * Accessor method to get the number of alpacas for a given 
+     * protection level.
+     *
+     * @param protectionLevel The protection level as a String.
+     * @return The number of alpacas as an int.
+     */
+    public int getAlpacaCountForLevel(String protectionLevel)
     {
         switch (protectionLevel)
         {
@@ -213,73 +400,55 @@ public class AlpacaSheepGuards
         }
     }
 
+    /**
+     * Accessor method to get the Farm object.
+     *
+     * @return The Farm object.
+     */
     public Farm getFarm()
     {
         return this.farm;
     }
 
-    public void generateFileReport(String recommendedLevel)
+    /**
+     * Accessor method to get the array of protection levels.
+     *
+     * @return The array of protection level strings.
+     */
+    public static String[] getProtectionLevels()
     {
-        ProtectionLevelResult result = allProtectionLevelResults.get(recommendedLevel);
-        double lowestAvgCost = result.getAverageCost();
-        int alpacaCount = getAlpacaCountForLevel(recommendedLevel);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("Farm name: ").append(farm.getFarmName()).append("\n");
-        sb.append("Number of sheep: ").append(farm.getTotalSheeps()).append("\n");
-        sb.append("Number of lambs: ").append(farm.getTotalLambs()).append("\n");
-        sb.append("Recommended level of protection: Protection: ")
-          .append(alpacaCount).append(" alpaca").append(alpacaCount != 1 ? "s" : "").append("\n");
-        sb.append(String.format("Protection cost: $%.2f%n", lowestAvgCost));
-        double totalLost = result.getAverageSheepLost() + result.getAverageLambLost() + result.getAverageAlpacaLost();
-        sb.append(String.format("Average predicted number of animal lost: %.2f%n", totalLost));
-        sb.append("Most troublesome predator:\n");
-        for (String predator : result.getMostTroublesomePredators())
-        {
-            double kills = result.getAveragePredatorKills().get(predator);
-            sb.append(String.format(" %s, kill average: %.1f%n", predator, kills));
-        }
-
-        FileIO fileIO = new FileIO("alpacaSheepGuardViability.txt");
-        fileIO.writeFile(sb.toString());
+        return PROTECTION_LEVELS;
     }
 
-    // public void initialize()
-    // {
-    //     FileIO fileIO = new FileIO("predators.txt");
-    //     ArrayList<String[]> statesData = fileIO.readFile();
-        
-    //     if (statesData.isEmpty())
-    //     {
-    //         System.out.println("Error loading predators.txt");
-    //         return;
-    //     }
-        
-    //     FarmSetupHelper setupHelper = new FarmSetupHelper();
-    //     farm = setupHelper.initializeFarm(statesData);
-    // }
+    /**
+     * Accessor method to get the number of simulations to run per level.
+     *
+     * @return The number of simulations as an int.
+     */
+    public static int getNumSimulations()
+    {
+        return NUM_SIMULATIONS;
+    }
 
     /**
-     * Initializes the program by loading predator data and setting up the farm.
+     * Initializes the program by loading predator data and setting up 
+     * the farm.
+     * 
      */
-    public void initialize()
+    public void initializeFarm()
     {
         FileIO fileIO = new FileIO("predators.txt");
         ArrayList<String[]> statesData = fileIO.readFile();
-        
         if (statesData.isEmpty())
         {
             System.out.println("Error loading predators.txt");
             return;
         }
-        
         String farmName = requestFarmName();
         String[] selectedStateData = requestState(statesData);
         int[] animalCounts = requestSheepAndLamb();
-        
         farm.setFarmName(farmName);
         farm.initializeState(selectedStateData);
-        
         for (int i = 0; i < animalCounts[0]; i++)
         {
             farm.addSheepOnce();
@@ -288,193 +457,181 @@ public class AlpacaSheepGuards
         {
             farm.addLambOnce();
         }
-
         System.out.println(farm);
-    }
-
-    private Farm createFarmCopy()
-    {
-        Farm copy = new Farm(farm.getFarmName(), farm.getState());
-        for (int i = 0; i < farm.getTotalSheeps(); i++)
-        {
-            copy.addSheepOnce();
-        }
-        for (int i = 0; i < farm.getTotalLambs(); i++)
-        {
-            copy.addLambOnce();
-        }
-        return copy;
-    }
-
-    private void runAllSimulations()
-    {
-        for (String protectionLevel : PROTECTION_LEVELS)
-        {
-            int alpacaCount = getAlpacaCountForLevel(protectionLevel);
-            ArrayList<SimulationResult> resultsOfEachLevel = runSimulationsForEachLevel(protectionLevel, alpacaCount);
-            storeResultsForEachLevel(protectionLevel, resultsOfEachLevel);
-            printSimulationResultsEachLevel(protectionLevel);
-        }
-    }
-
-    private ArrayList<SimulationResult> runSimulationsForEachLevel(String level, int alpacaCount)
-    {
-        ArrayList<SimulationResult> results = new ArrayList<SimulationResult>();
-        for (int i = 0; i < NUM_SIMULATIONS; i++)
-        {
-            Farm simFarm = createFarmCopy();
-            setupAlpacaProtection(simFarm, alpacaCount);
-            SimulationResult protectionLevelResult = runSimulationOnce(simFarm, level);
-            results.add(protectionLevelResult);
-        }
-        return results;
-    }
-
-
-    private void setupAlpacaProtection(Farm farm, int alpacaCount)
-    {
-        for (int i = 0; i < alpacaCount; i++)
-        {
-           farm.addAlpacaOnce();
-        }
-    }
-
-    private SimulationResult runSimulationOnce(Farm farm, String protectionLevel)
-    {
-        Simulation sim = new Simulation(farm, protectionLevel);
-        return sim.run();
-    }
-
-    private void storeResultsForEachLevel(String protectionLevel, ArrayList<SimulationResult> results)
-    {
-        allSimulationResults.put(protectionLevel, results);
     }
 
     public static void main(String[] args)
     {
-        AlpacaSheepGuards program = new AlpacaSheepGuards();
-        program.run();
+        AlpacaSheepGuards alpacaSheepGuards = new AlpacaSheepGuards();
+        alpacaSheepGuards.run();
     }
 
+    /**
+     * Prints average animal loss statistics.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult 
+     * containing animal loss stats.
+     */
+    public void printAnimalLossStatistics(
+                            ProtectionLevelResult protectionLevelResult)
+    {
+        System.out.println("\n Average number of animal lost:");
+        System.out.printf(" Sheep: %.2f%n", 
+                            protectionLevelResult.getAverageSheepLost());
+        System.out.printf(" Lambs: %.2f%n", 
+                            protectionLevelResult.getAverageLambLost());
+        System.out.printf(" Alpacas: %.2f%n", 
+                            protectionLevelResult.getAverageAlpacaLost());
+    }
+    
+    /**
+     * Prints cost and protection level details.
+     *
+     * @param protectionLevelResult Contains the cost statistics.
+     */
+    public void printCostAndProtectionDetails(
+                            ProtectionLevelResult protectionLevelResult)
+    {
+        System.out.printf("Lowest average cost: $%.2f%n", 
+                                protectionLevelResult.getAverageCost());
+        int alpacaCount = getAlpacaCountForLevel(protectionLevelResult
+                                                    .getProtectionLevel());
+        System.out.println("Protection: " + alpacaCount + " alpaca" +
+            ((alpacaCount != 0 && alpacaCount != 1) ? "s" : ""));
+    }
+
+    /**
+     * Prints cost statistics (average, lowest, highest).
+     *
+     * @param protectionLevelResult The ProtectionLevelResult 
+     * containing cost stats.
+     */
+    public void printCostStatistics(ProtectionLevelResult protectionLevelResult)
+    {
+        System.out.printf(" Lowest Cost: $%.2f%n", 
+                            protectionLevelResult.getLowestCost());
+        System.out.printf(" Highest Cost: $%.2f%n", 
+                            protectionLevelResult.getHighestCost());
+        System.out.printf(" Average Cost: $%.2f%n", 
+                            protectionLevelResult.getAverageCost());
+    }
+
+    /**
+     * Prints formatted predator kill statistics.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult containing 
+     * predator kill stats.
+     */
+    public void printPredatorKills(ProtectionLevelResult protectionLevelResult)
+    {
+        System.out.println("\n Average number of animals killed by each predator:");
+        HashMap<String, Double> avgKills = protectionLevelResult
+                                            .getAveragePredatorKills();
+        for (HashMap.Entry<String, Double> entry : avgKills.entrySet())
+        {
+            String displayName = formatPredatorName(entry.getKey());
+            System.out.printf("%11s: %.2f%n", displayName, entry.getValue());
+        }
+    }
+
+    /**
+     * Prints the protection level header.
+     *
+     * @param protectionLevelResult The ProtectionLevelResult containing the protection level.
+     */
+    public void printProtectionLevelHeader(
+                                ProtectionLevelResult protectionLevelResult)
+    {
+        System.out.println("\n* Running simulation with " 
+                            + protectionLevelResult.getProtectionLevel());
+    }
+
+    /**
+     * Prints the report footer with file location information.
+     */
+    public void printReportFooter()
+    {
+        System.out.println("\nA report has been written to: alpacaSheepGuardViability.txt");
+        System.out.println("Goodbye");
+    }
+
+    /**
+     * Prints the report header with title bars.
+     */
+    public void printReportHeader()
+    {
+        System.out.println("\n=============================");
+        System.out.println("End of Simulation Report");
+        System.out.println("=============================");
+    }
+
+    /**
+     * Prints simulation results for each protection level.
+     *
+     * @param protectionLevel The protection level to print.
+     */
     public void printSimulationResultsEachLevel(String protectionLevel)
     {
         ArrayList<SimulationResult> resultsOfLevel = this.allSimulationResults.get(protectionLevel);
         System.out.println("Protection Level: " + protectionLevel);
-        resultsOfLevel.forEach(protectionLevelResult ->
+        for (SimulationResult protectionLevelResult : resultsOfLevel)
         {
             System.out.println(protectionLevelResult.getTotalCost());
             System.out.println(" " + protectionLevelResult.toString());
             System.out.println(" Alpaca Maintenance Costs:");
-            protectionLevelResult.farm.getAlpacas().forEach(alpaca -> System.out.println(" Alpaca " + alpaca.getName() + ": $" + alpaca.getMaintenanceCost()));
-        });
+            protectionLevelResult.farm.getAlpacas().forEach(alpaca ->
+                System.out.println(" Alpaca " + alpaca.getName() + ": $" + alpaca.getMaintenanceCost()));
+        }
         System.out.println();
         System.out.println();
     }
 
-        /**
-     * Prompts user for a valid farm name (at least 6 characters).
+    /**
+     * Prints details about the most troublesome predators.
+     *
+     * @param protectionLevelResult Contains predator statistics.
      */
-    private String requestFarmName()
+    public void printTroublesomePredators(ProtectionLevelResult protectionLevelResult)
     {
-        String farmName = "";
-        boolean proceed = false;
-        Input input = new Input();
-        Validation validation = new Validation();
-
-        do
+        System.out.println(" Troublesome predator:");
+        for (String predator : protectionLevelResult.getMostTroublesomePredators())
         {
-            farmName = input.acceptStringInput("What is your farm's name: ");
-            if (!validation.stringLengthInRange(farmName, 6, Integer.MAX_VALUE))
-            {
-                System.out.println("Error: at least 6 characters is required");
-            }
-            else
-            {
-                proceed = true;
-            }
-        } while (!proceed);
-        
-        return farmName;
+            double kills = protectionLevelResult.getAveragePredatorKills().get(predator);
+            System.out.printf(" %s, kill average: %.1f%n", predator, kills);
+        }
     }
 
     /**
-     * Prompts user to select a valid state from file data.
+     * Prints information about predators with zero kills.
+     *
+     * @param protectionLevelResult Contains predator statistics.
      */
-    private String[] requestState(ArrayList<String[]> statesData)
+    public void printZeroKillPredators(ProtectionLevelResult protectionLevelResult)
     {
-        String[] selectedState = null;
-        boolean proceed = false;
-        Input input = new Input();
-
-        while (!proceed)
+        ArrayList<String> zeroKillers = protectionLevelResult.getZeroKillPredators();
+        if (zeroKillers.isEmpty())
         {
-            System.out.println("Which state?");
-            for (String[] state : statesData)
-            {
-                System.out.println("- " + state[0]);
-            }
-            String inputState = input.acceptStringInput("Choice: ");
-            
-            for (String[] state : statesData)
-            {
-                if (state[0].equalsIgnoreCase(inputState))
-                {
-                    selectedState = state;
-                    proceed = true;
-                    break;
-                }
-            }
-            
-            if (!proceed)
-            {
-                System.out.println("Error: invalid state");
-            }
+            System.out.println(" All predators killed at least one animal");
         }
-        return selectedState;
-    }
-
-    /**
-     * Requests and validates sheep/lamb counts with total constraints.
-     */
-    private int[] requestSheepAndLamb()
-    {
-        int sheepCount = -1;
-        int lambCount = -1;
-        boolean proceed = false;
-        Validation validation = new Validation();
-        
-        while (!proceed)
+        else
         {
-            sheepCount = requestAnimalCount("sheep");
-            lambCount = requestAnimalCount("lamb");
-            
-            int total = sheepCount + lambCount;
-            if (total == 0)
-            {
-                System.out.println("Error: total must be more than 0");
-            }
-            else if (!validation.intInRange(total, 1, 100))
-            {
-                System.out.println("Error: total must not exceed 100");
-            }
-            else
-            {
-                proceed = true;
-            }
+            System.out.println(" " + zeroKillers.size() + " predators that had no kill:");
+            System.out.println(" " + String.join(", ", zeroKillers));
         }
-        return new int[]{sheepCount, lambCount};
     }
 
     /**
      * Prompts for valid animal count (>=0).
+     *
+     * @param animalType The type of animal ("sheep" or "lamb").
+     * @return The validated animal count as an int.
      */
-    private int requestAnimalCount(String animalType)
+    public int requestAnimalCount(String animalType)
     {
         int count = -1;
         boolean proceed = false;
         Input input = new Input();
         Validation validation = new Validation();
-
         do
         {
             String inputCountString = input.acceptStringInput("How many " + animalType + "? ");
@@ -485,7 +642,7 @@ public class AlpacaSheepGuards
                 {
                     if (count < 0)
                         System.out.println("Error: number must not be less than 0");
-                    else 
+                    else
                         System.out.println("Error: number must not be more than 100");
                 }
                 else
@@ -504,27 +661,234 @@ public class AlpacaSheepGuards
                     System.out.println("Error: value is not a number: '" + inputCountString + "'");
                 }
             }
-        } while (!proceed);
-        
+        } while (!proceed == true);
         return count;
     }
 
+    /**
+     * Prompts user for a valid farm name (at least 6 characters).
+     *
+     * @return The validated farm name as a String.
+     */
+    public String requestFarmName()
+    {
+        String farmName = "";
+        boolean proceed = false;
+        Input input = new Input();
+        Validation validation = new Validation();
+        do
+        {
+            farmName = input.acceptStringInput("What is your farm's name: ");
+            if (!validation.stringLengthInRange(farmName, 6, Integer.MAX_VALUE))
+            {
+                System.out.println("Error: at least 6 characters is required");
+            }
+            else
+            {
+                proceed = true;
+            }
+        } while (!proceed == true);
+        return farmName;
+    }
+
+    /**
+     * Requests and validates sheep/lamb counts with total constraints.
+     *
+     * @return An array of two integers: [sheepCount, lambCount].
+     */
+    public int[] requestSheepAndLamb()
+    {
+        int sheepCount = -1;
+        int lambCount = -1;
+        boolean proceed = false;
+        Validation validation = new Validation();
+        while (!proceed == true)
+        {
+            sheepCount = requestAnimalCount("sheep");
+            lambCount = requestAnimalCount("lamb");
+            int total = sheepCount + lambCount;
+            if (total == 0)
+            {
+                System.out.println("Error: total must be more than 0");
+            }
+            else if (!validation.intInRange(total, 1, 100))
+            {
+                System.out.println("Error: total must not exceed 100");
+            }
+            else
+            {
+                proceed = true;
+            }
+        }
+        return new int[]{sheepCount, lambCount};
+    }
+
+    /**
+     * Prompts user to select a valid state from file data.
+     *
+     * @param statesData The list of state data arrays.
+     * @return The selected state data array.
+     */
+    public String[] requestState(ArrayList<String[]> statesData)
+    {
+        String[] selectedState = null;
+        boolean proceed = false;
+        Input input = new Input();
+        while (!proceed == true)
+        {
+            System.out.println("Which state?");
+            for (String[] state : statesData)
+            {
+                System.out.println("- " + state[0]);
+            }
+            String inputState = input.acceptStringInput("Choice: ");
+            for (String[] state : statesData)
+            {
+                if (state[0].equalsIgnoreCase(inputState))
+                {
+                    selectedState = state;
+                    proceed = true;
+                    break;
+                }
+            }
+            if (proceed == false)
+            {
+                System.out.println("Error: invalid state");
+            }
+        }
+        return selectedState;
+    }
+
+    /**
+     * Runs the main simulation workflow for the program.
+     */
     public void run()
     {
         welcomeUser();
-        initialize();
+        initializeFarm();
         runAllSimulations();
-        calculateProtectionLevelResults(this.farm.getState().getPredators());
+        calculateProtectionLevelResults();
         displayLevels();
         String recommendedLevel = findRecommendedLevel();
         displayFinalRecommendation(recommendedLevel);
         generateFileReport(recommendedLevel);
     }
 
+    /**
+     * Runs simulations for all protection levels and stores results.
+     */
+    public void runAllSimulations()
+    {
+        for (String protectionLevel : PROTECTION_LEVELS)
+        {
+            ArrayList<SimulationResult> results = runSimulationsForProtectionLevel(protectionLevel);
+            storeSimulationResults(protectionLevel, results);
+        }
+    }
+
+    /**
+     * Executes a single simulation run for the given protection level.
+     *
+     * @param protectionLevel The protection level to use.
+     * @return Result of the single simulation.
+     */
+    public SimulationResult runSimulationOnce(String protectionLevel)
+    {
+        Simulation simulation = new Simulation(farm, protectionLevel);
+        return simulation.run();
+    }
+
+    /**
+     * Runs NUM_SIMULATIONS rounds for a specific protection level.
+     *
+     * @param protectionLevel The protection level to simulate.
+     * @return List of simulation results for this protection level.
+     */
+    public ArrayList<SimulationResult> runSimulationsForProtectionLevel(String protectionLevel)
+    {
+        ArrayList<SimulationResult> results = new ArrayList<SimulationResult>();
+        for (int i = 0; i < NUM_SIMULATIONS; i++)
+        {
+            results.add(runSimulationOnce(protectionLevel));
+        }
+        return results;
+    }
+
+    /**
+     * Mutator method to set the map of all protection level results.
+     *
+     * @param allProtectionLevelResults The HashMap of protection level results to set.
+     */
+    public void setAllProtectionLevelResults(HashMap<String, ProtectionLevelResult> allProtectionLevelResults)
+    {
+        this.allProtectionLevelResults = allProtectionLevelResults;
+    }
+
+    /**
+     * Mutator method to set the map of all simulation results.
+     *
+     * @param allSimulationResults The HashMap of simulation results to set.
+     */
+    public void setAllSimulationResults(HashMap<String, ArrayList<SimulationResult>> allSimulationResults)
+    {
+        this.allSimulationResults = allSimulationResults;
+    }
+
+    /**
+     * Mutator method to set the Farm object.
+     *
+     * @param farm The Farm object to set.
+     */
+    public void setFarm(Farm farm)
+    {
+        this.farm = farm;
+    }
+
+    /**
+     * Stores simulation results for a protection level in the results map.
+     *
+     * @param protectionLevel The protection level being stored.
+     * @param results List of simulation results to store.
+     */
+    public void storeSimulationResults(String protectionLevel, ArrayList<SimulationResult> results)
+    {
+        allSimulationResults.put(protectionLevel, results);
+    }
+
+    /**
+     * Returns a string representation of the AlpacaSheepGuards object,
+     * including the farm and summary of simulation/protection level results.
+     *
+     * @return The state of the object as a formatted String.
+     */
+    @Override
+    public String toString()
+    {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("Alpaca Sheep Guards Program State:\n");
+        stringBuffer.append("Farm:\n");
+        stringBuffer.append(farm.toString());
+        stringBuffer.append("\nSimulation Results by Protection Level:\n");
+        for (String level : allSimulationResults.keySet())
+        {
+            stringBuffer.append("  ").append(level).append(": ")
+                        .append(allSimulationResults.get(level).size()).append(" simulations\n");
+        }
+        stringBuffer.append("\nProtection Level Results:\n");
+        for (String level : allProtectionLevelResults.keySet())
+        {
+            stringBuffer.append("  ").append(level).append(": ")
+                        .append(allProtectionLevelResults.get(level).toString()).append("\n");
+        }
+        return stringBuffer.toString();
+    }
+
+    /**
+     * Welcomes the user to the program.
+     */
     public void welcomeUser()
     {
         System.out.println("Welcome to the Alpaca Sheep Guards Program");
     }
 
 }
-

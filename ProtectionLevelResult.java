@@ -1,34 +1,24 @@
-/**
- * ProtectionLevelResult stores all statistics for a single protection level
- * in the alpaca sheep guard simulation program.
- *
- * @author Your Name
- * @version 1.0.0
- */
 import java.util.HashMap;
 import java.util.ArrayList;
 
+/**
+ * Class which stores all statistics for a single protection level
+ * in the alpaca sheep guard simulation program.
+ *
+ * @author Szeto Lok
+ * @version 1.0.0
+ */
 public class ProtectionLevelResult
 {
-
     private String protectionLevel;
-
     private double averageCost;
-
     private double lowestCost;
-
     private double highestCost;
-
     private double averageSheepLost;
-
     private double averageLambLost;
-
     private double averageAlpacaLost;
-
     private HashMap<String, Double> averagePredatorKills;
-
     private ArrayList<String> mostTroublesomePredators;
-
     private ArrayList<String> zeroKillPredators;
 
     /**
@@ -44,9 +34,9 @@ public class ProtectionLevelResult
         this.averageSheepLost = 0.0;
         this.averageLambLost = 0.0;
         this.averageAlpacaLost = 0.0;
-        this.averagePredatorKills = new HashMap<>();
-        this.mostTroublesomePredators = new ArrayList<>();
-        this.zeroKillPredators = new ArrayList<>();
+        this.averagePredatorKills = new HashMap<String, Double>();
+        this.mostTroublesomePredators = new ArrayList<String>();
+        this.zeroKillPredators = new ArrayList<String>();
     }
 
     /**
@@ -61,13 +51,19 @@ public class ProtectionLevelResult
      * @param averageLambLost The average number of lambs lost.
      * @param averageAlpacaLost The average number of alpacas lost.
      * @param averagePredatorKills The average predator kills.
-     * @param mostTroublesomePredator The most troublesome predator.
+     * @param mostTroublesomePredators The most troublesome predators.
      * @param zeroKillPredators ArrayList of predator names with zero kills.
      */
-    public ProtectionLevelResult(String protectionLevel, double averageCost, double lowestCost,
-                                double highestCost, double averageSheepLost, double averageLambLost,
-                                double averageAlpacaLost, HashMap<String, Double> averagePredatorKills,
-                                ArrayList<String> mostTroublesomePredators, ArrayList<String> zeroKillPredators)
+    public ProtectionLevelResult(String protectionLevel, 
+                                double averageCost, 
+                                double lowestCost,
+                                double highestCost, 
+                                double averageSheepLost, 
+                                double averageLambLost,
+                                double averageAlpacaLost, 
+                                HashMap<String, Double> averagePredatorKills,
+                                ArrayList<String> mostTroublesomePredators, 
+                                ArrayList<String> zeroKillPredators)
     {
         this.protectionLevel = protectionLevel;
         this.averageCost = averageCost;
@@ -82,7 +78,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the average number of alpacas lost.
+     * Accessor method to get the average number of alpacas lost.
      *
      * @return The average number of alpacas lost.
      */
@@ -92,7 +88,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the average cost.
+     * Accessor method to get the average cost.
      *
      * @return The average total cost.
      */
@@ -102,7 +98,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the average number of lambs lost.
+     * Accessor method to get the average number of lambs lost.
      *
      * @return The average number of lambs lost.
      */
@@ -112,17 +108,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the average number of sheep lost.
-     *
-     * @return The average number of sheep lost.
-     */
-    public double getAverageSheepLost()
-    {
-        return this.averageSheepLost;
-    }
-
-    /**
-     * Returns the average predator kills map.
+     * Accessor method to get the average predator kills map.
      *
      * @return The average predator kills.
      */
@@ -132,7 +118,17 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the highest cost.
+     * Accessor method to get the average number of sheep lost.
+     *
+     * @return The average number of sheep lost.
+     */
+    public double getAverageSheepLost()
+    {
+        return this.averageSheepLost;
+    }
+
+    /**
+     * Accessor method to get the highest cost.
      *
      * @return The highest total cost.
      */
@@ -142,7 +138,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the lowest cost.
+     * Accessor method to get the lowest cost.
      *
      * @return The lowest total cost.
      */
@@ -151,12 +147,18 @@ public class ProtectionLevelResult
         return this.lowestCost;
     }
 
-    public ArrayList<String> getMostTroublesomePredators() 
+    /**
+     * Accessor method to get the most troublesome predators.
+     *
+     * @return The ArrayList of most troublesome predator names.
+     */
+    public ArrayList<String> getMostTroublesomePredators()
     {
         return this.mostTroublesomePredators;
     }
+
     /**
-     * Returns the protection level.
+     * Accessor method to get the protection level.
      *
      * @return The protection level name.
      */
@@ -166,7 +168,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Returns the ArrayList of predators with zero kills.
+     * Accessor method to get the ArrayList of predators with zero kills.
      *
      * @return The ArrayList of predator names with zero kills.
      */
@@ -176,7 +178,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the average number of alpacas lost.
+     * Mutator method to set the average number of alpacas lost.
      *
      * @param averageAlpacaLost The average number of alpacas lost.
      */
@@ -186,7 +188,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the average cost.
+     * Mutator method to set the average cost.
      *
      * @param averageCost The average total cost.
      */
@@ -196,7 +198,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the average number of lambs lost.
+     * Mutator method to set the average number of lambs lost.
      *
      * @param averageLambLost The average number of lambs lost.
      */
@@ -206,7 +208,18 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the average number of sheep lost.
+     * Mutator method to set the average predator kills map.
+     *
+     * @param averagePredatorKills The average predator kills.
+     */
+    public void setAveragePredatorKills(
+                    HashMap<String, Double> averagePredatorKills)
+    {
+        this.averagePredatorKills = averagePredatorKills;
+    }
+
+    /**
+     * Mutator method to set the average number of sheep lost.
      *
      * @param averageSheepLost The average number of sheep lost.
      */
@@ -216,17 +229,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the average predator kills map.
-     *
-     * @param averagePredatorKills The average predator kills.
-     */
-    public void setAveragePredatorKills(HashMap<String, Double> averagePredatorKills)
-    {
-        this.averagePredatorKills = averagePredatorKills;
-    }
-
-    /**
-     * Sets the highest cost.
+     * Mutator method to set the highest cost.
      *
      * @param highestCost The highest total cost.
      */
@@ -236,7 +239,7 @@ public class ProtectionLevelResult
     }
 
     /**
-     * Sets the lowest cost.
+     * Mutator method to set the lowest cost.
      *
      * @param lowestCost The lowest total cost.
      */
@@ -245,19 +248,36 @@ public class ProtectionLevelResult
         this.lowestCost = lowestCost;
     }
 
-    public void setMostTroublesomePredators(ArrayList<String> mostTroublesomePredators) 
+    /**
+     * Mutator method to set the most troublesome predators.
+     *
+     * @param mostTroublesomePredators The ArrayList of most 
+     * troublesome predator names.
+     */
+    public void setMostTroublesomePredators(
+                        ArrayList<String>  mostTroublesomePredators)
     {
         this.mostTroublesomePredators = mostTroublesomePredators;
     }
 
+    /**
+     * Mutator method to set the protection level.
+     *
+     * @param protectionLevel The protection level name.
+     */
     public void setProtectionLevel(String protectionLevel)
     {
         this.protectionLevel = protectionLevel;
     }
 
-    public void setZeroKillPredators(ArrayList<String> zeroKillPredators) 
+    /**
+     * Mutator method to set the ArrayList of predators with zero kills.
+     *
+     * @param zeroKillPredators The ArrayList of predator names with 
+     * zero kills.
+     */
+    public void setZeroKillPredators(ArrayList<String> zeroKillPredators)
     {
         this.zeroKillPredators = zeroKillPredators;
     }
-
 }
