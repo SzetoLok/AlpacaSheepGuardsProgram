@@ -179,17 +179,17 @@ public class Farm
      * Accessor method to get a specific alpaca by index.
      *
      * @param index The index of the alpaca in the list.
-     * @return The Alpaca object at the given index, or null if out of 
-     * bounds.
+     * @return The Alpaca object at the given index, or an empty alpaca 
+     * if out of bounds.
      * 
      */
     public Alpaca getSpecificAlpaca(int index)
     {
-        if (index >= 0 && index < this.alpacas.size())
+        if (index < 0 || index >= this.alpacas.size())
         {
-            return this.alpacas.get(index);
+            return new Alpaca();
         }
-        return null;
+        return this.alpacas.get(index);
     }
 
     /**
@@ -308,19 +308,38 @@ public class Farm
     public String toString()
     {
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("Farm: ");
-        stringBuffer.append(this.farmName);
-        stringBuffer.append("\n");
-        stringBuffer.append(this.state.toString());
-        stringBuffer.append("Number of Alpaca: ");
-        stringBuffer.append(this.getTotalAlpacas());
-        stringBuffer.append("\n");
-        stringBuffer.append("Number of Sheeps: ");
-        stringBuffer.append(this.getTotalSheeps());
-        stringBuffer.append("\n");
-        stringBuffer.append("Number of Lambs: ");
-        stringBuffer.append(this.getTotalLambs());
-        stringBuffer.append("\n");
+        stringBuffer.append("Farm: ")
+                    .append(this.farmName)
+                    .append("\n")
+                    .append(this.state.toString());
+
+        if (this.sheeps.size() == 0) 
+            stringBuffer.append("No Sheep\n");
+        else
+        {
+            for (Sheep sheep : this.sheeps)
+            {
+                stringBuffer.append(sheep.toString() + "\n");
+            }
+        }
+        if (this.lambs.size() == 0) 
+            stringBuffer.append("No Lamb\n");
+        else
+        {
+            for (Lamb lamb : this.lambs)
+            {
+                stringBuffer.append(lamb.toString() + "\n");
+            }
+        }
+        if (this.lambs.size() == 0) 
+            stringBuffer.append("No Alpaca\n");
+        else
+        {
+            for (Alpaca alpaca : this.alpacas)
+            {
+                stringBuffer.append(alpaca.toString() + "\n");
+            }
+        }
         return stringBuffer.toString();
     }
 }

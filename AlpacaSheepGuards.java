@@ -96,10 +96,10 @@ public class AlpacaSheepGuards
                             .calculateAverageCost(simulationResults));
 
         protectionLevelResult
-            .setLowestCost(calculator.calculateHighestCost(simulationResults));
+            .setLowestCost(calculator.calculateLowestCost(simulationResults));
 
         protectionLevelResult
-            .setHighestCost(calculator.calculateLowestCost(simulationResults));
+            .setHighestCost(calculator.calculateHighestCost(simulationResults));
 
         protectionLevelResult
             .setAverageSheepLost(
@@ -310,16 +310,24 @@ public class AlpacaSheepGuards
     public String formatProtectionInfo(
                             ProtectionLevelResult protectionLevelResult)
     {
+        StringBuffer stringBuffer = new StringBuffer();
         int alpacaCount = getAlpacaCountForLevel(protectionLevelResult
                                                 .getProtectionLevel());
-        return String.format(
-            "Recommended level of protection: Protection: %d alpaca%s%nProtection cost: $%.2f%n",
-            alpacaCount,
-            ((alpacaCount != 0 && alpacaCount != 1) ? "s" : ""),
-            protectionLevelResult.getAverageCost()
-        );
+        stringBuffer.append("Recommended level of protection: ")
+                    .append(String.format(
+                "Protection: %d alpaca%s%nProtection cost: $%.2f%n",
+                        alpacaCount,
+                        ((alpacaCount != 0 && alpacaCount != 1) ? "s" : ""),
+                        protectionLevelResult.getAverageCost()));
+    //     return String.format(
+    // "Recommended level of protection: Protection: %d alpaca%s%nProtection cost: $%.2f%n",
+    //         alpacaCount,
+    //         ((alpacaCount != 0 && alpacaCount != 1) ? "s" : ""),
+    //         protectionLevelResult.getAverageCost()
+    //     );
+        return stringBuffer.toString();
     }
-
+ 
     /**
      * Formats the most troublesome predator(s) information for the report.
      *
@@ -336,7 +344,7 @@ public class AlpacaSheepGuards
         {
             double kills = protectionLevelResult
                             .getAveragePredatorKills().get(predator);
-            stringBuffer.append(String.format(" %s, kill average: %.1f%n",
+            stringBuffer.append(String.format("  %s, kill average: %.1f%n",
                                              predator, 
                                              kills));
         }
@@ -373,7 +381,8 @@ public class AlpacaSheepGuards
      *
      * @return The HashMap of simulation results.
      */
-    public HashMap<String,ArrayList<SimulationResult>> getAllSimulationResults()
+    public HashMap<String,ArrayList<SimulationResult>> getAllSimulationResults(
+                                                                              )
     {
         return this.allSimulationResults;
     }
@@ -435,18 +444,14 @@ public class AlpacaSheepGuards
      * the farm.
      * 
      */
-    public void initializeFarm()
+    public void requestFarmInformation()
     {
         FileIO fileIO = new FileIO("predators.txt");
         ArrayList<String[]> statesData = fileIO.readFile();
-        if (statesData.isEmpty())
-        {
-            System.out.println("Error loading predators.txt");
-            return;
-        }
         String farmName = requestFarmName();
         String[] selectedStateData = requestState(statesData);
         int[] animalCounts = requestSheepAndLamb();
+
         farm.setFarmName(farmName);
         farm.initializeState(selectedStateData);
         for (int i = 0; i < animalCounts[0]; i++)
@@ -457,7 +462,6 @@ public class AlpacaSheepGuards
         {
             farm.addLambOnce();
         }
-        System.out.println(farm);
     }
 
     public static void main(String[] args)
@@ -475,12 +479,12 @@ public class AlpacaSheepGuards
     public void printAnimalLossStatistics(
                             ProtectionLevelResult protectionLevelResult)
     {
-        System.out.println("\n Average number of animal lost:");
-        System.out.printf(" Sheep: %.2f%n", 
+        System.out.println("\n    Average number of animal lost:");
+        System.out.printf("      Sheep: %.2f%n", 
                             protectionLevelResult.getAverageSheepLost());
-        System.out.printf(" Lambs: %.2f%n", 
+        System.out.printf("      Lambs: %.2f%n", 
                             protectionLevelResult.getAverageLambLost());
-        System.out.printf(" Alpacas: %.2f%n", 
+        System.out.printf("      Alpacas: %.2f%n", 
                             protectionLevelResult.getAverageAlpacaLost());
     }
     
@@ -508,11 +512,11 @@ public class AlpacaSheepGuards
      */
     public void printCostStatistics(ProtectionLevelResult protectionLevelResult)
     {
-        System.out.printf(" Lowest Cost: $%.2f%n", 
+        System.out.printf("    Lowest Cost: $%.2f%n", 
                             protectionLevelResult.getLowestCost());
-        System.out.printf(" Highest Cost: $%.2f%n", 
+        System.out.printf("    Highest Cost: $%.2f%n", 
                             protectionLevelResult.getHighestCost());
-        System.out.printf(" Average Cost: $%.2f%n", 
+        System.out.printf("    Average Cost: $%.2f%n", 
                             protectionLevelResult.getAverageCost());
     }
 
@@ -524,7 +528,9 @@ public class AlpacaSheepGuards
      */
     public void printPredatorKills(ProtectionLevelResult protectionLevelResult)
     {
-        System.out.println("\n Average number of animals killed by each predator:");
+        System.out.println("\n    Average number of animals killed"
+                            + " by each predator:");
+
         HashMap<String, Double> avgKills = protectionLevelResult
                                             .getAveragePredatorKills();
         for (HashMap.Entry<String, Double> entry : avgKills.entrySet())
@@ -537,7 +543,8 @@ public class AlpacaSheepGuards
     /**
      * Prints the protection level header.
      *
-     * @param protectionLevelResult The ProtectionLevelResult containing the protection level.
+     * @param protectionLevelResult The ProtectionLevelResult containing 
+     * the protection level.
      */
     public void printProtectionLevelHeader(
                                 ProtectionLevelResult protectionLevelResult)
@@ -551,7 +558,8 @@ public class AlpacaSheepGuards
      */
     public void printReportFooter()
     {
-        System.out.println("\nA report has been written to: alpacaSheepGuardViability.txt");
+        System.out.println("\nA report has been written to: "
+                            + " alpacaSheepGuardViability.txt");
         System.out.println("Goodbye");
     }
 
@@ -570,34 +578,38 @@ public class AlpacaSheepGuards
      *
      * @param protectionLevel The protection level to print.
      */
-    public void printSimulationResultsEachLevel(String protectionLevel)
-    {
-        ArrayList<SimulationResult> resultsOfLevel = this.allSimulationResults.get(protectionLevel);
-        System.out.println("Protection Level: " + protectionLevel);
-        for (SimulationResult protectionLevelResult : resultsOfLevel)
-        {
-            System.out.println(protectionLevelResult.getTotalCost());
-            System.out.println(" " + protectionLevelResult.toString());
-            System.out.println(" Alpaca Maintenance Costs:");
-            protectionLevelResult.farm.getAlpacas().forEach(alpaca ->
-                System.out.println(" Alpaca " + alpaca.getName() + ": $" + alpaca.getMaintenanceCost()));
-        }
-        System.out.println();
-        System.out.println();
-    }
+    // public void printSimulationResultsEachLevel(String protectionLevel)
+    // {
+    //     ArrayList<SimulationResult> resultsOfLevel = this.allSimulationResults.get(protectionLevel);
+    //     System.out.println("Protection Level: " + protectionLevel);
+    //     for (SimulationResult protectionLevelResult : resultsOfLevel)
+    //     {
+    //         System.out.println(protectionLevelResult.getTotalCost());
+    //         System.out.println(" " + protectionLevelResult.toString());
+    //         System.out.println(" Alpaca Maintenance Costs:");
+    //         protectionLevelResult.farm.getAlpacas().forEach(alpaca ->
+    //             System.out.println(" Alpaca " + alpaca.getName() + ": $" + alpaca.getMaintenanceCost()));
+    //     }
+    //     System.out.println();
+    //     System.out.println();
+    // }
 
     /**
      * Prints details about the most troublesome predators.
      *
      * @param protectionLevelResult Contains predator statistics.
      */
-    public void printTroublesomePredators(ProtectionLevelResult protectionLevelResult)
+    public void printTroublesomePredators(
+                                ProtectionLevelResult protectionLevelResult)
     {
-        System.out.println(" Troublesome predator:");
-        for (String predator : protectionLevelResult.getMostTroublesomePredators())
+        System.out.println("  Troublesome predator:");
+        for (String predator : protectionLevelResult
+                                .getMostTroublesomePredators())
         {
-            double kills = protectionLevelResult.getAveragePredatorKills().get(predator);
-            System.out.printf(" %s, kill average: %.1f%n", predator, kills);
+            double kills = protectionLevelResult
+                                .getAveragePredatorKills().get(predator);
+                                
+            System.out.printf("    %s, kill average: %.1f%n", predator, kills);
         }
     }
 
@@ -606,17 +618,21 @@ public class AlpacaSheepGuards
      *
      * @param protectionLevelResult Contains predator statistics.
      */
-    public void printZeroKillPredators(ProtectionLevelResult protectionLevelResult)
+    public void printZeroKillPredators(
+                        ProtectionLevelResult protectionLevelResult)
     {
-        ArrayList<String> zeroKillers = protectionLevelResult.getZeroKillPredators();
+        ArrayList<String> zeroKillers = protectionLevelResult
+                                        .getZeroKillPredators();
         if (zeroKillers.isEmpty())
         {
-            System.out.println(" All predators killed at least one animal");
+            System.out.println("  All predators killed at least one animal");
         }
         else
         {
-            System.out.println(" " + zeroKillers.size() + " predators that had no kill:");
-            System.out.println(" " + String.join(", ", zeroKillers));
+            System.out.println("  " + zeroKillers.size() 
+                                    + " predators that had no kill:");
+
+            System.out.println("    " + String.join(", ", zeroKillers));
         }
     }
 
@@ -632,18 +648,23 @@ public class AlpacaSheepGuards
         boolean proceed = false;
         Input input = new Input();
         Validation validation = new Validation();
-        do
+
+        while (!proceed == true)
         {
-            String inputCountString = input.acceptStringInput("How many " + animalType + "? ");
+            String inputCountString = input.acceptStringInput("How many " 
+                                                            + animalType 
+                                                            + "? ");
             try
             {
                 count = Integer.parseInt(inputCountString);
                 if (!validation.intInRange(count, 0, 100))
                 {
                     if (count < 0)
-                        System.out.println("Error: number must not be less than 0");
+                        System.out.println("Error: number must not " 
+                                            + "be less than 0");
                     else
-                        System.out.println("Error: number must not be more than 100");
+                        System.out.println("Error: number must not "
+                                            + "be more than 100");
                 }
                 else
                 {
@@ -658,10 +679,11 @@ public class AlpacaSheepGuards
                 }
                 else
                 {
-                    System.out.println("Error: value is not a number: '" + inputCountString + "'");
+                    System.out.println("Error: value is not a number: '"
+                                        + inputCountString + "'");
                 }
             }
-        } while (!proceed == true);
+        }
         return count;
     }
 
@@ -676,10 +698,14 @@ public class AlpacaSheepGuards
         boolean proceed = false;
         Input input = new Input();
         Validation validation = new Validation();
-        do
+
+        while (!proceed == true)
         {
-            farmName = input.acceptStringInput("What is your farm's name: ");
-            if (!validation.stringLengthInRange(farmName, 6, Integer.MAX_VALUE))
+            farmName = input
+                        .acceptStringInput("What is your farm's name: ");
+            if (!validation.stringLengthInRange(farmName, 
+                                            6, 
+                                                Integer.MAX_VALUE))
             {
                 System.out.println("Error: at least 6 characters is required");
             }
@@ -687,7 +713,7 @@ public class AlpacaSheepGuards
             {
                 proceed = true;
             }
-        } while (!proceed == true);
+        } 
         return farmName;
     }
 
@@ -706,14 +732,16 @@ public class AlpacaSheepGuards
         {
             sheepCount = requestAnimalCount("sheep");
             lambCount = requestAnimalCount("lamb");
-            int total = sheepCount + lambCount;
-            if (total == 0)
+            int totalCount = sheepCount + lambCount;
+            if (totalCount == 0)
             {
-                System.out.println("Error: total must be more than 0");
+                System.out.println("Error: the total number of sheep and lambs"
+                                    + " must be more than 0");
             }
-            else if (!validation.intInRange(total, 1, 100))
+            else if (!validation.intInRange(totalCount, 1, 100))
             {
-                System.out.println("Error: total must not exceed 100");
+                System.out.println("Error: the total number of sheep and lambs"
+                                    + " must not exceed 100");
             }
             else
             {
@@ -731,17 +759,21 @@ public class AlpacaSheepGuards
      */
     public String[] requestState(ArrayList<String[]> statesData)
     {
-        String[] selectedState = null;
+        String[] selectedState = new String[0];
         boolean proceed = false;
         Input input = new Input();
+
         while (!proceed == true)
         {
             System.out.println("Which state?");
+
             for (String[] state : statesData)
             {
                 System.out.println("- " + state[0]);
             }
+
             String inputState = input.acceptStringInput("Choice: ");
+
             for (String[] state : statesData)
             {
                 if (state[0].equalsIgnoreCase(inputState))
@@ -753,7 +785,7 @@ public class AlpacaSheepGuards
             }
             if (proceed == false)
             {
-                System.out.println("Error: invalid state");
+                System.out.println("Error: invalid state\n");
             }
         }
         return selectedState;
@@ -765,7 +797,7 @@ public class AlpacaSheepGuards
     public void run()
     {
         welcomeUser();
-        initializeFarm();
+        requestFarmInformation();
         runAllSimulations();
         calculateProtectionLevelResults();
         displayLevels();
@@ -781,7 +813,9 @@ public class AlpacaSheepGuards
     {
         for (String protectionLevel : PROTECTION_LEVELS)
         {
-            ArrayList<SimulationResult> results = runSimulationsForProtectionLevel(protectionLevel);
+            ArrayList<SimulationResult> results = 
+                            runSimulationsForProtectionLevel(protectionLevel);
+
             storeSimulationResults(protectionLevel, results);
         }
     }
@@ -804,9 +838,12 @@ public class AlpacaSheepGuards
      * @param protectionLevel The protection level to simulate.
      * @return List of simulation results for this protection level.
      */
-    public ArrayList<SimulationResult> runSimulationsForProtectionLevel(String protectionLevel)
+    public ArrayList<SimulationResult> runSimulationsForProtectionLevel(
+                                                        String protectionLevel)
     {
-        ArrayList<SimulationResult> results = new ArrayList<SimulationResult>();
+        ArrayList<SimulationResult> results = 
+                                            new ArrayList<SimulationResult>();
+
         for (int i = 0; i < NUM_SIMULATIONS; i++)
         {
             results.add(runSimulationOnce(protectionLevel));
@@ -817,9 +854,11 @@ public class AlpacaSheepGuards
     /**
      * Mutator method to set the map of all protection level results.
      *
-     * @param allProtectionLevelResults The HashMap of protection level results to set.
+     * @param allProtectionLevelResults The HashMap of protection 
+     * level results to set.
      */
-    public void setAllProtectionLevelResults(HashMap<String, ProtectionLevelResult> allProtectionLevelResults)
+    public void setAllProtectionLevelResults(HashMap<String, 
+                            ProtectionLevelResult> allProtectionLevelResults)
     {
         this.allProtectionLevelResults = allProtectionLevelResults;
     }
@@ -829,7 +868,8 @@ public class AlpacaSheepGuards
      *
      * @param allSimulationResults The HashMap of simulation results to set.
      */
-    public void setAllSimulationResults(HashMap<String, ArrayList<SimulationResult>> allSimulationResults)
+    public void setAllSimulationResults(HashMap<String, 
+                            ArrayList<SimulationResult>> allSimulationResults)
     {
         this.allSimulationResults = allSimulationResults;
     }
@@ -850,7 +890,8 @@ public class AlpacaSheepGuards
      * @param protectionLevel The protection level being stored.
      * @param results List of simulation results to store.
      */
-    public void storeSimulationResults(String protectionLevel, ArrayList<SimulationResult> results)
+    public void storeSimulationResults(String protectionLevel,
+                                         ArrayList<SimulationResult> results)
     {
         allSimulationResults.put(protectionLevel, results);
     }
@@ -865,20 +906,26 @@ public class AlpacaSheepGuards
     public String toString()
     {
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("Alpaca Sheep Guards Program State:\n");
-        stringBuffer.append("Farm:\n");
-        stringBuffer.append(farm.toString());
-        stringBuffer.append("\nSimulation Results by Protection Level:\n");
+        stringBuffer.append("Alpaca Sheep Guards Program State:\n")
+                    .append("Farm:\n")
+                    .append(farm.toString())
+                    .append("\nSimulation Results by Protection Level:\n");
         for (String level : allSimulationResults.keySet())
         {
-            stringBuffer.append("  ").append(level).append(": ")
-                        .append(allSimulationResults.get(level).size()).append(" simulations\n");
+            stringBuffer.append("  ")
+                        .append(level)
+                        .append(": ")
+                        .append(allSimulationResults.get(level).size())
+                        .append(" simulations\n");
         }
         stringBuffer.append("\nProtection Level Results:\n");
         for (String level : allProtectionLevelResults.keySet())
         {
-            stringBuffer.append("  ").append(level).append(": ")
-                        .append(allProtectionLevelResults.get(level).toString()).append("\n");
+            stringBuffer.append("  ")
+                        .append(level)
+                        .append(": ")
+                        .append(allProtectionLevelResults.get(level).toString())
+                        .append("\n");
         }
         return stringBuffer.toString();
     }
@@ -890,5 +937,4 @@ public class AlpacaSheepGuards
     {
         System.out.println("Welcome to the Alpaca Sheep Guards Program");
     }
-
 }

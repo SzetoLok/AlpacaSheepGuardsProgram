@@ -1,0 +1,9 @@
+Your program must demonstrate your understanding of the object-oriented concepts and general programming constructs presented in FIT9131. Consider carefully your choice of classes, how they interact and the fields and methods of each class. You must use appropriate data structures to store the various objects in the program. You must make use of both Arrays and ArrayLists in your program. Make sure that you discuss your design with your tutor. You must document any additional assumptions you made.
+
+You will be required to justify your design and the choice of any data structures used at the interview. 
+
+Validation of values for fields and local variables should be implemented where appropriate. You should not allow an object of a class to be set to an invalid state (i.e., put some simple validations in your mutator methods).
+
+Your program should handle incorrect or invalid input and present the user with relevant error messages. No invalid input should crash the program. 
+
+Exception handling should be used where appropriate.

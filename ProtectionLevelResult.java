@@ -78,6 +78,15 @@ public class ProtectionLevelResult
     }
 
     /**
+     * Display method to print the state of the FileIO object.
+     * 
+     */
+    public void display()
+    {
+        System.out.println(this.toString());
+    }
+
+    /**
      * Accessor method to get the average number of alpacas lost.
      *
      * @return The average number of alpacas lost.
@@ -279,5 +288,50 @@ public class ProtectionLevelResult
     public void setZeroKillPredators(ArrayList<String> zeroKillPredators)
     {
         this.zeroKillPredators = zeroKillPredators;
+    }
+
+    /**
+     * Returns a string representation of the ProtectionLevelResult object,
+     * including protection level, costs, animal losses, and predator 
+     * statistics.
+     *
+     * @return The state of the ProtectionLevelResult object as a 
+     * formatted String.
+     */
+    @Override
+    public String toString()
+    {
+        StringBuffer stringBuffer = new StringBuffer()
+            .append("Protection Level: ")
+            .append(this.protectionLevel)
+            .append("\n")
+            .append("Average Cost: $")
+            .append(String.format("%.2f", this.averageCost))
+            .append("\n")
+            .append("Lowest Cost: $")
+            .append(String.format("%.2f", this.lowestCost))
+            .append("\n")
+            .append("Highest Cost: $")
+            .append(String.format("%.2f", this.highestCost))
+            .append("\n")
+            .append("Average Sheep Lost: ")
+            .append(String.format("%.2f", this.averageSheepLost))
+            .append("\n")
+            .append("Average Lamb Lost: ")
+            .append(String.format("%.2f", this.averageLambLost))
+            .append("\n")
+            .append("Average Alpaca Lost: ")
+            .append(String.format("%.2f", this.averageAlpacaLost))
+            .append("\n")
+            .append("Average Predator Kills: ")
+            .append(this.averagePredatorKills)
+            .append("\n")
+            .append("Most Troublesome Predators: ")
+            .append(this.mostTroublesomePredators)
+            .append("\n")
+            .append("Zero Kill Predators: ")
+            .append(this.zeroKillPredators)
+            .append("\n");
+        return stringBuffer.toString();
     }
 }

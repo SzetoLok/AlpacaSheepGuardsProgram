@@ -9,9 +9,12 @@ import java.util.HashMap;
  */
 public class State
 {
-
     private String stateName;
     private Predator[] predators;
+    private final String [] PREDATOR_NAMES = {"Fox", 
+                                            "Dingo", 
+                                            "Feral Pig", 
+                                            "Wedge-tailed Eagle"};
 
     /**
      * Default constructor which creates a state with default values.
@@ -65,18 +68,23 @@ public class State
     }
 
     /**
+     * Accessor method to get the array of Predator objects.
+     *
+     * @return The array of Predator objects.
+     */
+    public Predator[] getPredators()
+    {
+        return this.predators;
+    }
+
+    /**
      * Accessor method to get the names of all predators in this state.
      *
      * @return An array of Strings representing predator names.
      */
     public String[] getPredatorsNames()
     {
-        String[] predatorsName = new String[this.predators.length];
-        for (int index = 0; index < this.predators.length; index++)
-        {
-            predatorsName[index] = this.predators[index].getName();
-        }
-        return predatorsName;
+        return this.PREDATOR_NAMES;
     }
 
     /**
@@ -94,16 +102,6 @@ public class State
                                     predator.getDangerFactor());
         }
         return predatorsInformation;
-    }
-
-    /**
-     * Accessor method to get the array of Predator objects.
-     *
-     * @return The array of Predator objects.
-     */
-    public Predator[] getPredators()
-    {
-        return this.predators;
     }
 
     /**
@@ -140,17 +138,14 @@ public class State
      */
     public void initializePredators(String[] predatorData)
     {
-        String[] predatorNames = {"Fox", 
-                                "Dingo", 
-                                "Feral Pig", 
-                                "Wedge-tailed Eagle"};
         this.predators = new Predator[predatorData.length];
         for (int index = 0; index < predatorData.length; index++)
         {
             double dangerFactor = Double.parseDouble(predatorData[index]);
-            this.setSpecificPredator(index, 
-                                    new Predator(predatorNames[index], 
-                                                dangerFactor));
+
+            this
+            .setSpecificPredator(index, new Predator(PREDATOR_NAMES[index], 
+                                                        dangerFactor));
         }
     }
 
@@ -227,5 +222,4 @@ public class State
         }
         return stringBuffer.toString();
     }
-
 }

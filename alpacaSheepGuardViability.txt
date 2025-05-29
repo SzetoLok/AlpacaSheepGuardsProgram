@@ -1,9 +1,10 @@
-Farm name: werweqr\
+Farm name: asdfasdf
 Number of sheep: 5
 Number of lambs: 5
 Recommended level of protection: Protection: 0 alpaca
-Protection cost: $345.00
-Average predicted number of animal lost: 1.50
+Protection cost: $680.00
+Average predicted number of animal lost: 3.00
 Most troublesome predator:
- Dingo, kill average: 0.7
+  Fox, kill average: 0.9
+  Dingo, kill average: 0.9
 

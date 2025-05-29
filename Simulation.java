@@ -70,7 +70,6 @@ public class Simulation
     {
         this.farm = farm.copyFarm();
         this.protectionLevel = protectionLevel;
-        this.setupAlpacaProtection();
         this.animalAliveMap = animalAliveMap;
         this.animalDeathMap = animalDeathMap;
         this.predatorKillsMap = predatorKillsMap;
@@ -99,11 +98,12 @@ public class Simulation
 
         int totalAlpacaHiringCost = farm.getAlpacas().size() 
                                     * Alpaca.HIRE_COST;
+
         int totalAlpacaMaintenanceCost = farm.getTotalAlpacaMaintenanceCost();
 
-        return totalStockLostValue 
+        return (totalStockLostValue 
             + totalAlpacaHiringCost
-            + totalAlpacaMaintenanceCost;
+            + totalAlpacaMaintenanceCost);
     }
 
     /**
@@ -195,6 +195,7 @@ public class Simulation
     {
         HashMap<String, Integer> predatorKillsMap = new HashMap<>();
         String[] predatorsNames = farm.getPredatorsNames();
+
         for (String name : predatorsNames)
         {
             predatorKillsMap.put(name, 0);

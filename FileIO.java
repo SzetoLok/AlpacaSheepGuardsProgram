@@ -35,6 +35,15 @@ public class FileIO
     }
 
     /**
+     * Display method to print the state of the FileIO object.
+     * 
+     */
+    public void display()
+    {
+        System.out.println(this.toString());
+    }
+
+    /**
      * Accessor method to get the file name.
      *
      * @return The file name as a String.
@@ -79,6 +88,23 @@ public class FileIO
     public void setFileName(String fileName)
     {
         this.fileName = fileName;
+    }
+
+    /**
+     * Returns a string representation of the FileIO object,
+     * including the file name.
+     *
+     * @return The state of the FileIO object as a formatted String.
+     */
+    @Override
+    public String toString()
+    {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("FileIO State:\n")
+                    .append("File Name: ")
+                    .append(this.fileName)
+                    .append("\n");
+        return stringBuffer.toString();
     }
 
     /**
